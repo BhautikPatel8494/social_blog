@@ -2,8 +2,8 @@ import { Controller, Post, Body, Res, Req, HttpCode, ValidationPipe, Put, UseGua
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from "../../middleware/roles.gaurd";
-import { Roles } from '../../middleware/role.decorator'
+import { SignUpForUser, SignInForUser, ChangePassword } from './auth.validation';
+
 @Controller('/api/v1')
 export class AuthDeviceController {
   constructor(
@@ -27,14 +27,14 @@ export class AuthDeviceController {
   // Admin Register
   @Post('/user/register')
   @HttpCode(200)
-  async signUpForUser(@Req() req: Request, @Res() res: Response) {
+  async signUpForUser(@Body(new ValidationPipe()) data: SignUpForUser, @Req() req: Request, @Res() res: Response) {
     return await this.authService.signUpForUser(req, res);
   }
 
   // Login
   @Post('/user/login')
   @HttpCode(200)
-  async loginForUser(@Req() req: Request, @Res() res: Response) {
+  async loginForUser(@Body(new ValidationPipe()) data: SignInForUser, @Req() req: Request, @Res() res: Response) {
     return await this.authService.loginForUser(req, res);
   }
 
@@ -56,7 +56,7 @@ export class AuthDeviceController {
   @Post('/user/change-password')
   @HttpCode(200)
   @UseGuards(AuthGuard('jwt-device'))
-  async changePassword(@Req() req: Request, @Res() res: Response) {
+  async changePassword(@Body(new ValidationPipe()) data: ChangePassword, @Req() req: Request, @Res() res: Response) {
     return await this.authService.changePassword(req, res);
   }
 }

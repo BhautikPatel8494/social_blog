@@ -1,7 +1,6 @@
 import { IsString, IsEmail, MinLength, IsOptional, IsNumber, IsPhoneNumber, IsNotEmpty } from 'class-validator';
 
-// tslint:disable-next-line: max-classes-per-file
-export class LoginForUser {
+export class SignInForUser {
 
   @IsEmail()
   email: string;
@@ -9,125 +8,29 @@ export class LoginForUser {
   @IsString()
   @MinLength(8)
   password: string;
-
-  @IsString()
-  deviceToken: string;
-
-  @IsString()
-  deviceType: string;
 }
 
-// tslint:disable-next-line: max-classes-per-file
-// export class LoginForAdmin {
+export class SignUpForUser {
 
-//   @IsNotEmpty()
-//   @IsString()
-//   email: string;
+  @IsString()
+  name: string;
 
-//   @IsString()
-//   @MinLength(8)
-//   password: string;
-// }
+  @IsString()
+  email: string;
 
-// tslint:disable-next-line: max-classes-per-file
-// export class SignUpForAdmin {
+  @IsString()
+  password: string;
 
-//   @IsEmail()
-//   email: string;
+  @IsString()
+  birthDate: string;
+}
 
-//   @IsString()
-//   @MinLength(8)
-//   password: string;
-// }
+export class ChangePassword {
 
-// export class SignUpForUser {
+  @IsString()
+  oldPassword: string;
 
-//   @IsString()
-//   firstName: string;
+  @IsString()
+  newPassword: string;
+}
 
-//   @IsString()
-//   lastName: string;
-
-//   @IsString()
-//   phoneNumber: string;
-
-//   @IsString()
-//   countryCode: string;
-
-//   @IsString()
-//   callingCode: string;
-
-//   @IsEmail()
-//   email: string;
-
-//   @IsString()
-//   @MinLength(8)
-//   password: string;
-// }
-
-// tslint:disable-next-line: max-classes-per-file
-// export class ForGotPassword {
-
-//   @IsEmail()
-//   email: string;
-// }
-
-// tslint:disable-next-line: max-classes-per-file
-// export class ResetPassword {
-
-//   @IsEmail()
-//   email: string;
-
-//   @IsString()
-//   @MinLength(8)
-//   password: string;
-
-//   @IsNumber()
-//   code: number;
-// }
-
-// // tslint:disable-next-line: max-classes-per-file
-// export class VerifyOTP {
-
-//   @IsString()
-//   phoneNumber: string;
-
-//   @IsString()
-//   otp: string;
-
-//   @IsString()
-//   callingCode: string;
-// }
-
-// // tslint:disable-next-line: max-classes-per-file
-// export class ChangePassword {
-
-//   @IsString()
-//   oldPassword: string;
-
-//   @IsString()
-//   newPassword: string;
-// }
-
-// // tslint:disable-next-line: max-classes-per-file
-// export class ForgotPassword {
-
-//   @IsEmail()
-//   email: string;
-// }
-
-// tslint:disable-next-line: max-classes-per-file
-// export class VerifyOTPForNewNumber {
-
-//   @IsString()
-//   phoneNumber: string;
-
-//   @IsString()
-//   otp: string;
-
-//   @IsString()
-//   countryCode: string;
-
-//   @IsString()
-//   callingCode: string;
-// }

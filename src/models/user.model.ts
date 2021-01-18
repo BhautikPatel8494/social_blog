@@ -4,6 +4,14 @@ export const UserTypes = {
     admin: 'Admin'
 }
 
+export const SocialMediaTypes = {
+    facebook: 'Facebook',
+    appleId: 'AppleId',
+    linkedIn: 'LinkedIn',
+    twitter: 'Twitter',
+    google: 'Google'
+}
+
 export const UsersSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -39,6 +47,15 @@ export const UsersSchema = new mongoose.Schema({
     }],
     birthDate:
     {
+        type: String,
+        default: null,
+    },
+    socialMediaType: {
+        type: String,
+        default: null,
+        enum: Object.values(SocialMediaTypes),
+    },
+    socialMediaId: {
         type: String,
         default: null,
     }
