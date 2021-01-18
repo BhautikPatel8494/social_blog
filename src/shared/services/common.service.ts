@@ -1,17 +1,13 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '../../config/services/config.service';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../interface/model.interface';
-import { AuthService } from 'src/api/auth/auth.service';
-
 @Injectable()
 export class CommonService {
 
     constructor(
-        // @Inject(forwardRef(() => AuthService))
-        // private readonly authService: AuthService,
         private readonly configService: ConfigService,
         private readonly jwtService: JwtService,
         @InjectModel('User') private readonly userModel: Model<User>,

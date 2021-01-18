@@ -1,4 +1,4 @@
-import { Controller, Req, Res, Post, Get, Delete, Put, HttpCode,UseGuards} from '@nestjs/common';
+import { Controller, Req, Res, Post, Get, Delete, Put, HttpCode, UseGuards } from '@nestjs/common';
 import { AuthGuard } from "@nestjs/passport";
 import { GiftService } from './gift.service'
 import { Response, Request } from 'express';
@@ -18,7 +18,7 @@ export class GiftController {
     @HttpCode(200)
     @UseGuards(AuthGuard("jwt"), RolesGuard)
     @Roles("Admin")
-    async addGift(@Req() req: Request, @Res() res: any) {
+    async addGift(@Req() req: Request, @Res() res: Response) {
         return await this.giftService.addGift(req, res);
     }
 
@@ -27,7 +27,7 @@ export class GiftController {
     @HttpCode(200)
     @UseGuards(AuthGuard("jwt"), RolesGuard)
     @Roles("Admin")
-    async updategoft(@Req() req: Request, @Res() res: any) {
+    async updategoft(@Req() req: Request, @Res() res: Response) {
         return await this.giftService.updateGiftDetails(req, res);
     }
 
@@ -36,15 +36,14 @@ export class GiftController {
     @HttpCode(200)
     @UseGuards(AuthGuard("jwt"), RolesGuard)
     @Roles("Admin")
-    async deleteGiftCard(@Req() req: Request, @Res() res: any) {
+    async deleteGiftCard(@Req() req: Request, @Res() res: Response) {
         return await this.giftService.deleteGiftDetails(req, res);
     }
 
     // Get gift list
     @Get('/')
     @HttpCode(200)
-    
-    async signUpForAdmin(@Req() req: Request, @Res() res: any) {
+    async signUpForAdmin(@Req() req: Request, @Res() res: Response) {
         return await this.giftService.listGiftDetauls(req, res);
     }
 

@@ -1,4 +1,8 @@
 import * as mongoose from 'mongoose';
+export const UserTypes = {
+    user: 'User',
+    admin: 'Admin'
+}
 
 export const UsersSchema = new mongoose.Schema({
     name: {
@@ -18,20 +22,24 @@ export const UsersSchema = new mongoose.Schema({
     userType: {
         type: String,
         required: true,
-        default: 'User',
-        enum: ['User', 'Admin'],
+        default: UserTypes.user,
+        enum: Object.values(UserTypes),
     },
-    token: {
+    apiToken: {
         type: String,
         default: null,
     },
-    contactNumber:
-    {
-        type: String
+    contactNumber: {
+        type: String,
+        default: null,
     },
-    deviceTokens: [{ type: String }],
+    deviceTokens: [{
+        type: String,
+        default: [],
+    }],
     birthDate:
     {
-        type: Date
+        type: String,
+        default: null,
     }
 }, { timestamps: true });

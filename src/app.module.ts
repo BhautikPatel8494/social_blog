@@ -5,14 +5,15 @@ import { AppService } from './app.service';
 import { UserModule } from './api/user/user.module';
 import { AuthModule } from './api/auth/auth.module';
 import { ConfigService } from './config/services/config.service';
-import {ConfigModule} from './config/config.module'
+import { ConfigModule } from './config/config.module'
 import { SharedModule } from './shared/shared.module';
 import { GiftModule } from './api/admin/gift/gift.module';
 import { OccasionModule } from './api/admin/occasion/occasion.module';
 import { CountryModule } from './api/admin/country/country.module';
 
 @Module({
-  imports: [UserModule,
+  imports: [
+    UserModule,
     AuthModule,
     SharedModule,
     GiftModule,
