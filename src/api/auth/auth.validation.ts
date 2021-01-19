@@ -40,6 +40,7 @@ export class SignUpForUser {
   name: string;
 
   @IsString()
+  @IsOptional()
   email: string;
 
   @IsString()

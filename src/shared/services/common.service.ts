@@ -23,7 +23,7 @@ export class CommonService {
             const { email, _id } = user;
             const payload = {
                 _id,
-                email,
+                // email,
             };
             return this.jwtService.sign(payload, this.jwtConfig);
         } catch (error) {

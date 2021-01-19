@@ -15,12 +15,11 @@ export const SocialMediaTypes = {
 export const UsersSchema = new mongoose.Schema({
     name: {
         type: String,
-        default: true,
+        default: null,
     },
     email: {
         type: String,
-        required: true,
-        unique: true,
+        default: null
     },
     password: {
         type: String,

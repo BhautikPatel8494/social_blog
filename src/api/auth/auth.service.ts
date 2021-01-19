@@ -90,14 +90,14 @@ export class AuthService implements OnModuleInit {
     try {
       const userInfo = req.body;
       const { email, password, name, socialMediaType, socialMediaId } = userInfo
-      if ((email && password && name) || (email && socialMediaType && socialMediaId)) {
-        const userWithEmailAlreadyInDB = await this.userModel.findOne({ email: userInfo.email }).lean().exec();
+      if ((email && password && name) || (socialMediaType && socialMediaId)) {
+        const userWithEmailAlreadyInDB = await this.userModel.findOne({ email: email }).lean().exec();
         if (userWithEmailAlreadyInDB) {
           return res.json({ statusCode: 400, message: 'User already exist with email.', data: null });
         } else {
           userInfo.userType = UserTypes.user;
           if (password) {
-            userInfo.password = await bcrypt.hash(userInfo.password, saltRounds);
+            userInfo.password = await bcrypt.hash(password, saltRounds);
           }
           let createUser = await this.userModel.create(userInfo);
           return res.status(200).json({ statusCode: 200, message: 'User registered successfully. Please login with this account.', data: createUser });
@@ -113,8 +113,8 @@ export class AuthService implements OnModuleInit {
   async loginForUser(req: Request, res: Response) {
     try {
       const { email, password, socialMediaType, socialMediaId } = req.body;
-      if ((email && password) || (email && socialMediaType && socialMediaId)) {
-        let userExist = await this.userModel.findOne({ email, userType: 'User' });
+      if ((email && password) || (socialMediaType && socialMediaId)) {
+        let userExist = await this.userModel.findOne({ email, userType: UserTypes.user });
         if (!userExist) {
           return res.status(200).json({ statusCode: 404, message: 'User not found. ', data: null });
         }
