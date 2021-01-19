@@ -27,7 +27,7 @@ export class AuthService implements OnModuleInit {
   // This will check user is valid or not for authorization
   async validateUser(payload: ObjectLiteral) {
     try {
-      return await this.userModel.findOne({ email: payload.email, apiToken: payload.token });
+      return await this.userModel.findOne({ _id: payload._id, apiToken: payload.token });
     } catch (error) {
       throw error;
     }

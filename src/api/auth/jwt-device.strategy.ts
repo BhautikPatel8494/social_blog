@@ -20,7 +20,6 @@ export class JwtDeviceStrategy extends PassportStrategy(Strategy, 'jwt-device') 
   }
 
   async validate(request: Request, payload: JwtPayload) {
-    // tslint:disable-next-line: no-string-literal
     const token = request.headers['authorization'];
     payload.token = token.slice(7, token.length).trimLeft();
 
