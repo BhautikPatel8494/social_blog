@@ -53,7 +53,7 @@ export const UsersSchema = new mongoose.Schema({
     socialMediaType: {
         type: String,
         default: null,
-        enum: Object.values(SocialMediaTypes),
+        // enum: Object.values(SocialMediaTypes),
     },
     socialMediaId: {
         type: String,
