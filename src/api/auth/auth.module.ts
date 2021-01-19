@@ -1,14 +1,16 @@
 import { Module, HttpModule } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { MongooseModule } from '@nestjs/mongoose';
+
 import { AuthService } from './auth.service';
 import { JwtDeviceStrategy } from './jwt-device.strategy';
-import { JWTOptionalGuard } from './jwt-authGuard';
-import { PassportModule } from '@nestjs/passport';
-import { ConfigService } from '../../config/services/config.service';
-import { ConfigModule } from '../../config/config.module';
 import { AuthDeviceController } from './auth.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { UsersSchema } from '../../models/user.model';
+import { JWTOptionalGuard } from './jwt-authGuard';
+
+import { ConfigService } from '@config/services/config.service';
+import { ConfigModule } from '@config/config.module';
+import { UsersSchema } from '@models/user.model';
 
 
 @Module({

@@ -1,14 +1,14 @@
 import { Injectable, OnModuleInit, Logger, HttpException } from '@nestjs/common';
-import { Response, Request } from 'express';
-import { ConfigService } from '../../config/services/config.service';
 import { InjectModel } from '@nestjs/mongoose';
+import { Response, Request } from 'express';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { v4 } from 'uuid';
-import { User } from '../../shared/interface/model.interface';
-import { CommonService } from '../../shared/services/common.service'
 
-
+import { ConfigService } from '@config/services/config.service';
+import { User } from '@shared/interface/model.interface';
+import { CommonService } from '@shared/services/common.service'
+import { sendMail } from '@shared/services/nodeMailer.service';
 const saltRounds = 10;
 
 @Injectable()
@@ -147,6 +147,34 @@ export class AuthService implements OnModuleInit {
     }
   }
 
+  async regsiterWithSocialMedia(req: Request, res: Response): Promise<any> {
+    try {
+      const { socialMediaType, socialMediaId, email } = req.body;
+      const userExist = await this.userModel.findOne({ email }).lean().exec();
+      if (userExist) {
+        return res.json({ statusCode: 400, message: "User already exist with provided email. Please try to login." });
+      }
+      const createUserWithSocialMedia = await this.userModel.create({ socialMediaType, socialMediaId, email });
+      return res.json({ statusCode: 200, message: "User registred succesfully with provided account. Please try to login with the same.", data: createUserWithSocialMedia });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async loginWithSocialMedia(req: Request, res: Response): Promise<any> {
+    try {
+      const { socialMediaType, socialMediaId, email } = req.body;
+      const userExist = await this.userModel.findOne({ email, socialMediaType, socialMediaId }).lean().exec();
+      if (!userExist) {
+        return res.json({ statusCode: 400, message: "User does not exist with provided credantial. Please try to register first." });
+      }
+      const token = await this.commonService.generateToken(userExist);
+      return res.status(200).json({ statusCode: 200, message: 'Login Successfully. ', data: { token, user: userExist } });
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
   async forgotPassword(req: any, res: Response): Promise<any> {
     try {
@@ -155,8 +183,9 @@ export class AuthService implements OnModuleInit {
       if (!userExist) {
         return res.json({ statusCode: 400, message: "Email does not exist" });
       }
-      // const code = Math.floor(100000 + Math.random() * 900000);
-      const code = 123456
+      const code = Math.floor(100000 + Math.random() * 900000);
+      // const code = 123456
+      sendMail('public/forgotPassword.ejs', email, { code: code })
       await this.userModel.findOneAndUpdate({ email }, { resetPasswordCode: code });
       return res.json({ statusCode: 200, message: "Please check your email for forgot password code.", data: { code } });
     } catch (error) {

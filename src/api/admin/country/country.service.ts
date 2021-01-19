@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Country } from 'src/shared/interface/model.interface';
-
+import { Response, Request } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+
+import { Country } from '@shared/interface/model.interface';
+import { CountryUpdateObj } from './country.interface';
 
 @Injectable()
 export class CountryService {
@@ -12,7 +14,7 @@ export class CountryService {
     ) { }
 
 
-    async addCountry(req: any, res: any) {
+    async addCountry(req: Request, res: Response) {
         try {
             let { name, alias } = req.body;
             const checkForCountry = await this.countryModel.findOne({ name: name }).lean().exec();
@@ -28,7 +30,7 @@ export class CountryService {
 
     }
 
-    async updateCountry(req: any, res: any) {
+    async updateCountry(req: Request, res: Response) {
         try {
 
             let { name, alias, _id } = req.body;
@@ -37,7 +39,7 @@ export class CountryService {
                 return res.json({ status: 200, msg: 'Country not  found', data: checkForCountry })
             }
 
-            let updateObj: any = {};
+            let updateObj: CountryUpdateObj = {};
             if (name !== undefined && name !== null) {
                 updateObj.name = name;
             }
@@ -54,11 +56,11 @@ export class CountryService {
         }
     }
 
-    async deleteCountry(req: any, res: any) {
+    async deleteCountry(req: Request, res: Response) {
         try {
             const { _id } = req.query;
-            const checkForCountry = await this.countryModel.findOneAndDelete({ _id: _id }).lean().exec();
-            return res.json({ status: 200, msg: 'Country deleted sucessfully', data: checkForCountry })
+            // const checkForCountry = await this.countryModel.findOneAndDelete({ _id }).lean().exec();
+            return res.json({ status: 200, msg: 'Country deleted sucessfully', data: null })
 
         } catch (error) {
             return res.json({ status: 500, msg: 'Error while deleting country', err: error })
@@ -66,7 +68,7 @@ export class CountryService {
 
     }
 
-    async listCountries(req: any, res: any) {
+    async listCountries(req: Request, res: Response) {
         try {
 
             const checkForCountry = await this.countryModel.find({}).lean().exec();

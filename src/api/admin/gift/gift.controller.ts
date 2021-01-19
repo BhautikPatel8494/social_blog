@@ -2,8 +2,8 @@ import { Controller, Req, Res, Post, Get, Delete, Put, HttpCode, UseGuards } fro
 import { AuthGuard } from "@nestjs/passport";
 import { GiftService } from './gift.service'
 import { Response, Request } from 'express';
-import { RolesGuard } from "../../../middleware/roles.gaurd";
-import { Roles } from '../../../middleware/role.decorator'
+import { RolesGuard } from "@middleware/roles.gaurd";
+import { Roles } from '@middleware/role.decorator'
 
 @Controller('gift')
 export class GiftController {

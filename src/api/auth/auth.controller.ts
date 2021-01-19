@@ -1,8 +1,9 @@
 import { Controller, Post, Body, Res, Req, HttpCode, ValidationPipe, Put, UseGuards } from '@nestjs/common';
 import { Response, Request } from 'express';
-import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { SignUpForUser, SignInForUser, ChangePassword } from './auth.validation';
+
+import { AuthService } from './auth.service';
+import { SignUpForUser, SignInForUser, ChangePassword, SocialMediaAuthantication } from './auth.validation';
 
 @Controller('/api/v1')
 export class AuthDeviceController {
@@ -24,7 +25,7 @@ export class AuthDeviceController {
     return await this.authService.loginForAdmin(req, res);
   }
 
-  // Admin Register
+  // User Register
   @Post('/user/register')
   @HttpCode(200)
   async signUpForUser(@Body(new ValidationPipe()) data: SignUpForUser, @Req() req: Request, @Res() res: Response) {
@@ -36,6 +37,20 @@ export class AuthDeviceController {
   @HttpCode(200)
   async loginForUser(@Body(new ValidationPipe()) data: SignInForUser, @Req() req: Request, @Res() res: Response) {
     return await this.authService.loginForUser(req, res);
+  }
+
+  // User Register
+  @Post('/user/social/register')
+  @HttpCode(200)
+  async regsiterWithSocialMedia(@Body(new ValidationPipe()) data: SocialMediaAuthantication, @Req() req: Request, @Res() res: Response) {
+    return await this.authService.regsiterWithSocialMedia(req, res);
+  }
+
+  // Login
+  @Post('/user/social/login')
+  @HttpCode(200)
+  async loginWithSocialMedia(@Body(new ValidationPipe()) data: SocialMediaAuthantication, @Req() req: Request, @Res() res: Response) {
+    return await this.authService.loginWithSocialMedia(req, res);
   }
 
   // Forgot-password

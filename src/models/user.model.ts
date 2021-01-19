@@ -5,17 +5,17 @@ export const UserTypes = {
 }
 
 export const SocialMediaTypes = {
-    facebook: 'Facebook',
-    appleId: 'AppleId',
-    linkedIn: 'LinkedIn',
-    twitter: 'Twitter',
-    google: 'Google'
+    facebook: 1,
+    appleId: 2,
+    linkedIn: 3,
+    twitter: 4,
+    google: 5
 }
 
 export const UsersSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
+        default: true,
     },
     email: {
         type: String,
@@ -25,7 +25,6 @@ export const UsersSchema = new mongoose.Schema({
     password: {
         type: String,
         default: null,
-        required: true,
     },
     userType: {
         type: String,
@@ -45,15 +44,18 @@ export const UsersSchema = new mongoose.Schema({
         type: String,
         default: [],
     }],
-    birthDate:
-    {
+    birthDate: {
         type: String,
+        default: null,
+    },
+    resetPasswordCode: {
+        type: Number,
         default: null,
     },
     socialMediaType: {
         type: String,
-        default: null,
-        // enum: Object.values(SocialMediaTypes),
+        default: 0,
+        enum: [0, ...Object.values(SocialMediaTypes)],
     },
     socialMediaId: {
         type: String,

@@ -1,4 +1,4 @@
-import { IsString, IsEmail, MinLength, IsOptional, IsNumber, IsPhoneNumber, IsNotEmpty } from 'class-validator';
+import { IsString, IsEmail, MinLength } from 'class-validator';
 
 export class SignInForUser {
 
@@ -23,6 +23,18 @@ export class SignUpForUser {
 
   @IsString()
   birthDate: string;
+}
+
+export class SocialMediaAuthantication {
+
+  @IsString()
+  socialMediaType: string;
+
+  @IsString()
+  socialMediaId: string;
+
+  @IsString()
+  email: string;
 }
 
 export class ChangePassword {
