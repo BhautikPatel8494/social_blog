@@ -4,6 +4,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Country } from '@shared/interface/model.interface';
+import { response } from '@root/shared/services/sendResponse.service';
+import { RESPONSE_STATUS_CODES } from '@root/shared/constants';
 import { CountryUpdateObj } from './country.interface';
 
 @Injectable()
@@ -13,72 +15,60 @@ export class CountryService {
         @InjectModel('Gift') private readonly countryModel: Model<Country>,
     ) { }
 
-
-    async addCountry(req: Request, res: Response) {
+    async createCountryRecord(req: Request, res: Response) {
         try {
             let { name, alias } = req.body;
             const checkForCountry = await this.countryModel.findOne({ name: name }).lean().exec();
-            if (checkForCountry !== undefined || checkForCountry !== undefined) {
-                return res.json({ status: 400, msg: 'Country already exists', data: null })
+            if (checkForCountry) {
+                return response('features.country.alreadyExist', RESPONSE_STATUS_CODES.badRequest, res)
             }
             const addedCountry = await this.countryModel.create({ name, alias });
-            return res.json({ status: 200, msg: 'Country added sucessfully', data: addedCountry })
+            return response('features.country.success', RESPONSE_STATUS_CODES.success, res, addedCountry)
 
         } catch (error) {
-            return res.json({ status: 500, msg: 'Error while adding country', err: error })
+            return response('features.country.failed', RESPONSE_STATUS_CODES.serverError, res)
         }
 
     }
 
-    async updateCountry(req: Request, res: Response) {
+    async updateCountryInfo(req: Request, res: Response) {
         try {
 
             let { name, alias, _id } = req.body;
             const checkForCountry = await this.countryModel.findOneAndDelete({ _id: _id }).lean().exec();
-            if (checkForCountry === undefined || checkForCountry === null) {
-                return res.json({ status: 200, msg: 'Country not  found', data: checkForCountry })
+            if (!checkForCountry) {
+                return response('features.country.notFound', RESPONSE_STATUS_CODES.notFound, res)
             }
 
             let updateObj: CountryUpdateObj = {};
-            if (name !== undefined && name !== null) {
-                updateObj.name = name;
-            }
-
-            if (alias !== undefined && alias !== null) {
-                updateObj.alias = alias;
-            }
+            name ? updateObj.name = name : null;
+            alias ? updateObj.alias = alias : null;
 
             const updateCountry = await this.countryModel.findOneAndUpdate({ _id: _id }, { $set: updateObj }, { new: true }).lean().exec();
-            return res.json({ status: 200, msg: 'Country updated  sucessfully', data: updateCountry })
+            return response('features.country.updated', RESPONSE_STATUS_CODES.success, res, updateCountry)
 
         } catch (error) {
-            return res.json({ status: 500, msg: 'Error while updating country', err: error })
+            return response('features.country.update.failed', RESPONSE_STATUS_CODES.serverError, res)
         }
     }
 
-    async deleteCountry(req: Request, res: Response) {
+    async deleteCountryFromList(req: Request, res: Response) {
         try {
-            const { _id } = req.query;
-            // const checkForCountry = await this.countryModel.findOneAndDelete({ _id }).lean().exec();
-            return res.json({ status: 200, msg: 'Country deleted sucessfully', data: null })
-
+            const { _id: id } = req.query;
+            await this.countryModel.findByIdAndDelete(id).lean().exec();
+            return response('features.country.delete.success', RESPONSE_STATUS_CODES.success, res)
         } catch (error) {
-            return res.json({ status: 500, msg: 'Error while deleting country', err: error })
+            return response('features.country.delete.failed', RESPONSE_STATUS_CODES.serverError, res)
         }
 
     }
 
-    async listCountries(req: Request, res: Response) {
+    async getListOfCountrys(req: Request, res: Response) {
         try {
-
-            const checkForCountry = await this.countryModel.find({}).lean().exec();
-            if (!checkForCountry.length) {
-                return res.json({ status: 400, msg: 'Country not exists', data: null })
-            }
-            return res.json({ status: 200, msg: 'Country fetched sucessfully', data: checkForCountry })
-
+            const getCountryList = await this.countryModel.find({}).lean().exec();
+            return response('features.country.list.success', RESPONSE_STATUS_CODES.success, res, getCountryList)
         } catch (error) {
-            return res.json({ status: 500, msg: 'Error while fetching country', err: error })
+            return response('features.country.list.failed', RESPONSE_STATUS_CODES.serverError, res)
         }
     }
 }
