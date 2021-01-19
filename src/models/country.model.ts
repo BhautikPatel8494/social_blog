@@ -5,9 +5,8 @@ export const CountrySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    alias:
-    {
-        type: String
+    alias: {
+        type: String,
+        required: true
     }
-
 }, { timestamps: true });

@@ -1,4 +1,5 @@
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import { SocialMediaTypes } from '@root/models/user.model';
+import { IsString, IsEmail, MinLength, IsOptional, IsNumber, IsEnum, IsNotEmpty } from 'class-validator';
 
 export class SignInForUser {
 
@@ -10,33 +11,54 @@ export class SignInForUser {
   password: string;
 }
 
+export class ForgotPassword {
+
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+}
+
+export class ResetPassword {
+
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  newPassword: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  code: number;
+}
+
 export class SignUpForUser {
 
   @IsString()
+  @IsOptional()
   name: string;
 
   @IsString()
   email: string;
 
   @IsString()
+  @IsOptional()
   password: string;
 
   @IsString()
+  @IsOptional()
   birthDate: string;
-}
 
-export class SocialMediaAuthantication {
+  @IsNumber()
+  @IsOptional()
+  @IsEnum(Object.values(SocialMediaTypes))
+  socialMediaType: number;
 
   @IsString()
-  socialMediaType: string;
-
-  @IsString()
+  @IsOptional()
   socialMediaId: string;
-
-  @IsString()
-  email: string;
 }
-
 export class ChangePassword {
 
   @IsString()

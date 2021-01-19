@@ -18,7 +18,7 @@ export class CommonService {
     jwtConfig = this.configService.getJWTConfig();
 
     // This will generate api token for user
-    async generateToken(user: { [key: string]: any }) {
+    async generateToken(user: User) {
         try {
             const { email, _id } = user;
             const payload = {

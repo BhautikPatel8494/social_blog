@@ -3,7 +3,7 @@ import { Response, Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AuthService } from './auth.service';
-import { SignUpForUser, SignInForUser, ChangePassword, SocialMediaAuthantication } from './auth.validation';
+import { SignUpForUser, SignInForUser, ChangePassword, ForgotPassword, ResetPassword } from './auth.validation';
 
 @Controller('/api/v1')
 export class AuthDeviceController {
@@ -21,7 +21,7 @@ export class AuthDeviceController {
   // Login
   @Post('/admin/login')
   @HttpCode(200)
-  async loginForAdmin(@Req() req: Request, @Res() res: Response) {
+  async loginForAdmin(@Body(new ValidationPipe()) data: SignInForUser, @Req() req: Request, @Res() res: Response) {
     return await this.authService.loginForAdmin(req, res);
   }
 
@@ -39,31 +39,17 @@ export class AuthDeviceController {
     return await this.authService.loginForUser(req, res);
   }
 
-  // User Register
-  @Post('/user/social/register')
-  @HttpCode(200)
-  async regsiterWithSocialMedia(@Body(new ValidationPipe()) data: SocialMediaAuthantication, @Req() req: Request, @Res() res: Response) {
-    return await this.authService.regsiterWithSocialMedia(req, res);
-  }
-
-  // Login
-  @Post('/user/social/login')
-  @HttpCode(200)
-  async loginWithSocialMedia(@Body(new ValidationPipe()) data: SocialMediaAuthantication, @Req() req: Request, @Res() res: Response) {
-    return await this.authService.loginWithSocialMedia(req, res);
-  }
-
   // Forgot-password
   @Post('/user/forgot-password')
   @HttpCode(200)
-  async forgotPassword(@Req() req: Request, @Res() res: Response) {
+  async forgotPassword(@Body(new ValidationPipe()) data: ForgotPassword, @Req() req: Request, @Res() res: Response) {
     return await this.authService.forgotPassword(req, res);
   }
 
   // Reset-password
   @Post('/user/reset-password')
   @HttpCode(200)
-  async resetPassword(@Req() req: Request, @Res() res: Response) {
+  async resetPassword(@Body(new ValidationPipe()) data: ResetPassword, @Req() req: Request, @Res() res: Response) {
     return await this.authService.resetPassword(req, res);
   }
 

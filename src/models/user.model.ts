@@ -53,7 +53,7 @@ export const UsersSchema = new mongoose.Schema({
         default: null,
     },
     socialMediaType: {
-        type: String,
+        type: Number,
         default: 0,
         enum: [0, ...Object.values(SocialMediaTypes)],
     },

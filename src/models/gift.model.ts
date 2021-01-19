@@ -5,9 +5,8 @@ export const GiftSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    description:
-    {
-        type: String
+    description: {
+        type: String,
+        default: null,
     }
-
 }, { timestamps: true });

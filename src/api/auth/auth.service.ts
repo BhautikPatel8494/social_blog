@@ -9,6 +9,8 @@ import { ConfigService } from '@config/services/config.service';
 import { User } from '@shared/interface/model.interface';
 import { CommonService } from '@shared/services/common.service'
 import { sendMail } from '@shared/services/nodeMailer.service';
+import { ObjectLiteral } from '@shared/interface/common.interface';
+import { UserTypes } from '@models/user.model';
 const saltRounds = 10;
 
 @Injectable()
@@ -23,9 +25,8 @@ export class AuthService implements OnModuleInit {
   serverToken = this.configService.get('SERVER_TOKEN');
 
   // This will check user is valid or not for authorization
-  async validateUser(payload: { [key: string]: any }): Promise<any> {
+  async validateUser(payload: ObjectLiteral) {
     try {
-
       return await this.userModel.findOne({ email: payload.email, apiToken: payload.token });
     } catch (error) {
       throw error;
@@ -40,7 +41,6 @@ export class AuthService implements OnModuleInit {
       if (emailExist) {
         return res.status(200).json({ statusCode: 400, message: 'Email is already exist. Please try with login.', data: null });
       } else {
-        // Encrypt password
         userData.password = await bcrypt.hash(userData.password, saltRounds);
         userData.verificationToken = v4();
         userData.userType = 'Admin';
@@ -63,20 +63,8 @@ export class AuthService implements OnModuleInit {
   // Admin Login
   async loginForAdmin(req: Request, res: Response) {
     try {
-      // tslint:disable-next-line: prefer-const
       let { email, password } = req.body;
-      const query = {
-        $and: [
-          {
-            $or: [
-              { username: email },
-              { email }
-            ]
-          },
-          { userType: { $ne: 'User' } }
-        ]
-      }
-      let userExist = await this.userModel.findOne(query).lean().exec();
+      let userExist = await this.userModel.findOne({ email }).lean().exec();
       if (!userExist) {
         return res.status(200).json({ statusCode: 404, message: 'User not found. ', data: null });
       }
@@ -85,16 +73,13 @@ export class AuthService implements OnModuleInit {
         return res.status(200).json({ statusCode: 400, message: 'You have entered wrong password. Reset password if you have forgotten. ', data: null });
       }
 
-      // Generate token
       const token = await this.commonService.generateToken(userExist);
       const user = await this.userModel.findByIdAndUpdate(userExist._id, { apiToken: token }).lean().exec();
       const userData = { ...user };
       delete userData.password;
-      delete userData.verificationToken;
       delete userData.resetPasswordCode;
       return res.status(200).json({ statusCode: 200, message: 'Login Successfully. ', data: { token, user: userData } });
     } catch (error) {
-      // tslint:disable-next-line: no-console
       Logger.error('\n Admin Login Err : ', error);
       return res.status(400).json({ statusCode: 500, message: 'Failed to login for admin.', data: null });
     }
@@ -104,15 +89,21 @@ export class AuthService implements OnModuleInit {
   async signUpForUser(req: Request, res: Response) {
     try {
       const userInfo = req.body;
-      const userWithEmailAlreadyInDB = await this.userModel.findOne({ email: userInfo.email }).lean().exec();
-      if (userWithEmailAlreadyInDB) {
-        return res.status(200).json({ statusCode: 400, message: 'User already exist with email or phoneNumber.', data: null });
-      } else {
-        userInfo.password = await bcrypt.hash(userInfo.password, saltRounds);
-        userInfo.userType = 'User';
-        let createUser = await this.userModel.create(userInfo);
-        return res.status(200).json({ statusCode: 200, message: 'User registered successfully. Please login with this account.', data: createUser });
+      const { email, password, name, socialMediaType, socialMediaId } = userInfo
+      if ((email && password && name) || (email && socialMediaType && socialMediaId)) {
+        const userWithEmailAlreadyInDB = await this.userModel.findOne({ email: userInfo.email }).lean().exec();
+        if (userWithEmailAlreadyInDB) {
+          return res.json({ statusCode: 400, message: 'User already exist with email.', data: null });
+        } else {
+          userInfo.userType = UserTypes.user;
+          if (password) {
+            userInfo.password = await bcrypt.hash(userInfo.password, saltRounds);
+          }
+          let createUser = await this.userModel.create(userInfo);
+          return res.status(200).json({ statusCode: 200, message: 'User registered successfully. Please login with this account.', data: createUser });
+        }
       }
+      return res.json({ statusCode: 400, message: 'Data not sufficiant. Please pass valid info', data: null });
     } catch (error) {
       Logger.error('\n Admin Sign Up Err : ', error);
       return res.json({ statusCode: 500, message: 'Failed to sign up for user.', data: null });
@@ -121,62 +112,34 @@ export class AuthService implements OnModuleInit {
 
   async loginForUser(req: Request, res: Response) {
     try {
-      const { email, password, deviceToken } = req.body;
+      const { email, password, socialMediaType, socialMediaId } = req.body;
+      if ((email && password) || (email && socialMediaType && socialMediaId)) {
+        let userExist = await this.userModel.findOne({ email, userType: 'User' });
+        if (!userExist) {
+          return res.status(200).json({ statusCode: 404, message: 'User not found. ', data: null });
+        }
 
-      let userExist = await this.userModel.findOne({ email, userType: 'User' });
-      if (!userExist) {
-        return res.status(200).json({ statusCode: 404, message: 'User not found. ', data: null });
-      }
-      const comparePassword = await bcrypt.compare(password, userExist.password);
-      if (!comparePassword) {
-        return res.status(200).json({ statusCode: 400, message: 'You have entered wrong password. Reset password if you have forgotten. ', data: null });
-      }
-      if (deviceToken) {
-        userExist.deviceToken = deviceToken
-        userExist.save()
-      }
+        if (password) {
+          const comparePassword = await bcrypt.compare(password, userExist.password);
+          if (!comparePassword) {
+            return res.status(200).json({ statusCode: 400, message: 'You have entered wrong password. Reset password if you have forgotten. ', data: null });
+          }
+        }
 
-      const token = await this.commonService.generateToken(userExist);
-      const userData = await this.userModel.findByIdAndUpdate(userExist._id, { apiToken: token }, { new: true }).lean().exec();
-      delete userData.password;
+        const token = await this.commonService.generateToken(userExist);
+        const userData = await this.userModel.findByIdAndUpdate(userExist._id, { apiToken: token }, { new: true }).lean().exec();
+        delete userData.password;
 
-      return res.status(200).json({ statusCode: 200, message: 'Login Successfully. ', data: { token, user: userData } });
+        return res.status(200).json({ statusCode: 200, message: 'Login Successfully. ', data: { token, user: userData } });
+      }
+      return res.json({ statusCode: 400, message: 'Data not sufficiant. Please pass valid info', data: null });
     } catch (error) {
       Logger.error('\n Admin Login Err : ', error);
       return res.status(400).json({ statusCode: 500, message: 'Failed to login for user.', data: null });
     }
   }
 
-  async regsiterWithSocialMedia(req: Request, res: Response): Promise<any> {
-    try {
-      const { socialMediaType, socialMediaId, email } = req.body;
-      const userExist = await this.userModel.findOne({ email }).lean().exec();
-      if (userExist) {
-        return res.json({ statusCode: 400, message: "User already exist with provided email. Please try to login." });
-      }
-      const createUserWithSocialMedia = await this.userModel.create({ socialMediaType, socialMediaId, email });
-      return res.json({ statusCode: 200, message: "User registred succesfully with provided account. Please try to login with the same.", data: createUserWithSocialMedia });
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async loginWithSocialMedia(req: Request, res: Response): Promise<any> {
-    try {
-      const { socialMediaType, socialMediaId, email } = req.body;
-      const userExist = await this.userModel.findOne({ email, socialMediaType, socialMediaId }).lean().exec();
-      if (!userExist) {
-        return res.json({ statusCode: 400, message: "User does not exist with provided credantial. Please try to register first." });
-      }
-      const token = await this.commonService.generateToken(userExist);
-      return res.status(200).json({ statusCode: 200, message: 'Login Successfully. ', data: { token, user: userExist } });
-    } catch (error) {
-      throw error;
-    }
-  }
-
-
-  async forgotPassword(req: any, res: Response): Promise<any> {
+  async forgotPassword(req: Request, res: Response) {
     try {
       const { email } = req.body;
       const userExist = await this.userModel.findOne({ email }).lean().exec();
@@ -187,25 +150,23 @@ export class AuthService implements OnModuleInit {
       // const code = 123456
       sendMail('public/forgotPassword.ejs', email, { code: code })
       await this.userModel.findOneAndUpdate({ email }, { resetPasswordCode: code });
-      return res.json({ statusCode: 200, message: "Please check your email for forgot password code.", data: { code } });
+      return res.json({ statusCode: 200, message: "Please check your email for reset password code.", data: { code } });
     } catch (error) {
       throw error;
     }
   }
 
-  async resetPassword(req: any, res: Response): Promise<any> {
+  async resetPassword(req: Request, res: Response) {
     try {
-      const { email, password, code } = req.body;
-
-      //Check user exist or not
-      let userExist: any = await this.userModel.findOne({ email })
+      const { email, newPassword, code } = req.body;
+      let userExist = await this.userModel.findOne({ email })
       if (!userExist) {
         return res.json({ statusCode: 400, message: "Email does not exist" });
       }
       if (userExist.resetPasswordCode !== code) {
-        return res.json({ statusCode: 400, message: "Invalid OTP. Please enter valid OTP." });
+        return res.json({ statusCode: 400, message: "Invalid Code. Please enter valid Code." });
       }
-      userExist.password = await bcrypt.hash(password, saltRounds);
+      userExist.password = await bcrypt.hash(newPassword, saltRounds);
       userExist.resetPasswordCode = null;
       userExist.save()
       return res.json({ statusCode: 200, message: "Password updated sucsessfully." });
@@ -214,9 +175,7 @@ export class AuthService implements OnModuleInit {
     }
   }
 
-
-
-  async changePassword(req: any, res: Response): Promise<any> {
+  async changePassword(req: any, res: Response) {
     try {
       const { oldPassword, newPassword } = req.body;
       let findUserIsExist = await this.userModel.findById(req.user._id);
@@ -239,7 +198,7 @@ export class AuthService implements OnModuleInit {
   //Add default admin
   async onModuleInit() {
     try {
-      const adminExists: any = await this.userModel.find({ userType: 'Admin' }).lean().exec()
+      const adminExists = await this.userModel.find({ userType: 'Admin' }).lean().exec()
       if (adminExists.length === 0) {
         let adminObj = {
           userType: 'Admin',
