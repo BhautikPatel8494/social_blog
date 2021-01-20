@@ -39,7 +39,7 @@ export class SignUpForUser {
   @IsOptional()
   name: string;
 
-  @IsString()
+  @IsEmail()
   @IsOptional()
   email: string;
 
