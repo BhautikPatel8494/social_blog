@@ -7,7 +7,7 @@ export class SignInForUser {
   email: string;
 
   @IsString()
-  @MinLength(8)
+  @MinLength(6)
   password: string;
 }
 
@@ -45,6 +45,7 @@ export class SignUpForUser {
 
   @IsString()
   @IsOptional()
+  @MinLength(6)
   password: string;
 
   @IsString()
