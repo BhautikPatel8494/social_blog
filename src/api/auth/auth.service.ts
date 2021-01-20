@@ -83,7 +83,10 @@ export class AuthService implements OnModuleInit {
           userInfo.password = await bcrypt.hash(password, saltRounds);
         }
         let createUser = await this.userModel.create(userInfo);
-        return response('user.auth.signUp.success', RESPONSE_STATUS_CODES.success, res, createUser)
+        const token = await this.commonService.generateToken(createUser);
+        createUser.apiToken = token
+        createUser.save()
+        return response('user.auth.signUp.success', RESPONSE_STATUS_CODES.success, res, { token, user: createUser })
       }
     }
     return response('common.invalidData', RESPONSE_STATUS_CODES.badRequest, res)

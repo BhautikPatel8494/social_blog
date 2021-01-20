@@ -9,7 +9,7 @@ export interface User extends Document {
   readonly userType: string;
   readonly contactNumber: string;
   readonly deviceTokens: Array<string>;
-  readonly token: string;
+  apiToken: string;
   readonly birthDate: Date;
 }
 
