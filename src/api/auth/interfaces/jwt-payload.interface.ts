@@ -1,5 +1,5 @@
 export interface JwtPayload {
-  token: string;
+  apiToken: string;
   _id: string;
   phoneNumber: string;
   firstName: string;

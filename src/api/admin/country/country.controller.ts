@@ -4,9 +4,10 @@ import { CountryService } from './country.service'
 import { Response, Request } from 'express';
 import { RolesGuard } from "@middleware/roles.gaurd";
 import { Roles } from '@middleware/role.decorator'
+import { UserTypes } from '@root/models/user.model';
 import { UpsertCountry } from './country.validation';
 
-@Controller('country')
+@Controller('api/v1/country')
 export class CountryController {
 
     constructor(
@@ -15,24 +16,24 @@ export class CountryController {
 
     @Post('/')
     @HttpCode(200)
-    @UseGuards(AuthGuard("jwt"), RolesGuard)
-    @Roles("Admin")
+    @UseGuards(AuthGuard("jwt-device"), RolesGuard)
+    @Roles(UserTypes.admin)
     async createCountryRecord(@Body(new ValidationPipe()) data: UpsertCountry, @Req() req: Request, @Res() res: Response) {
         return await this.countryService.createCountryRecord(req, res);
     }
 
-    @Put('/')
+    @Put('/:id')
     @HttpCode(200)
-    @UseGuards(AuthGuard("jwt"), RolesGuard)
-    @Roles("Admin")
+    @UseGuards(AuthGuard("jwt-device"), RolesGuard)
+    @Roles(UserTypes.admin)
     async updateCountryInfo(@Body(new ValidationPipe()) data: UpsertCountry, @Req() req: Request, @Res() res: Response) {
         return await this.countryService.updateCountryInfo(req, res);
     }
 
-    @Delete('/')
+    @Delete('/:id')
     @HttpCode(200)
-    @UseGuards(AuthGuard("jwt"), RolesGuard)
-    @Roles("Admin")
+    @UseGuards(AuthGuard("jwt-device"), RolesGuard)
+    @Roles(UserTypes.admin)
     async deleteCountryFromList(@Req() req: Request, @Res() res: Response) {
         return await this.countryService.deleteCountryFromList(req, res);
     }

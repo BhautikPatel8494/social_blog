@@ -5,11 +5,11 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { v4 } from 'uuid';
 
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { ConfigService } from '@config/services/config.service';
 import { User } from '@shared/interface/model.interface';
 import { CommonService } from '@shared/services/common.service'
 import { sendMail } from '@shared/services/nodeMailer.service';
-import { ObjectLiteral } from '@shared/interface/common.interface';
 import { UserTypes } from '@models/user.model';
 import { response } from '@root/shared/services/sendResponse.service';
 import { RESPONSE_STATUS_CODES } from '@root/shared/constants';
@@ -26,195 +26,151 @@ export class AuthService implements OnModuleInit {
   ) { }
   serverToken = this.configService.get('SERVER_TOKEN');
 
-  async validateUser(payload: ObjectLiteral) {
-    try {
-      return await this.userModel.findOne({ _id: payload._id, apiToken: payload.token });
-    } catch (error) {
-      throw error;
-    }
+  async validateUser(payload: JwtPayload) {
+    const { _id, apiToken } = payload
+    return await this.userModel.findOne({ _id, apiToken });
   }
 
   async registerAdmin(req: Request, res: Response) {
-    try {
-      let userData = req.body;
-      const emailExist = await this.userModel.findOne({ email: userData.email }).lean().exec();
-      if (emailExist) {
-        return response('user.auth.signUp.existWithEmail', RESPONSE_STATUS_CODES.badRequest, res)
+    let userData = req.body;
+    const emailExist = await this.userModel.findOne({ email: userData.email }).lean().exec();
+    if (emailExist) {
+      return response('user.auth.signUp.existWithEmail', RESPONSE_STATUS_CODES.badRequest, res)
+    } else {
+      userData.password = await bcrypt.hash(userData.password, saltRounds);
+      userData.verificationToken = v4();
+      userData.userType = UserTypes.admin;
+      const createUser = await this.userModel.create(userData);
+      if (createUser) {
+        const userData = { ...createUser._doc };
+        delete userData.password;
+        return response('admin.auth.signUp.success', RESPONSE_STATUS_CODES.success, res)
       } else {
-        userData.password = await bcrypt.hash(userData.password, saltRounds);
-        userData.verificationToken = v4();
-        userData.userType = UserTypes.admin;
-        const createUser = await this.userModel.create(userData);
-        if (createUser) {
-          const userData = { ...createUser._doc };
-          delete userData.password;
-          return response('admin.auth.signUp.success', RESPONSE_STATUS_CODES.success, res)
-        } else {
-          return response('admin.auth.signUp.failed', RESPONSE_STATUS_CODES.badRequest, res)
-        }
+        return response('admin.auth.signUp.failed', RESPONSE_STATUS_CODES.badRequest, res)
       }
-    } catch (error) {
-      Logger.error('\n Admin Sign Up Err : ', error);
-      return response('error.admin.auth.signUp', RESPONSE_STATUS_CODES.serverError, res)
     }
   }
 
   async loginForAdmin(req: Request, res: Response) {
-    try {
-      let { email, password } = req.body;
-      let userExist = await this.userModel.findOne({ email }).lean().exec();
-      if (!userExist) {
-        return response('common.userNotFound', RESPONSE_STATUS_CODES.notFound, res)
-      }
-      const comparePassword = await bcrypt.compare(password, userExist.password);
-      if (!comparePassword) {
-        return response('user.auth.logIn.invalidPassword', RESPONSE_STATUS_CODES.badRequest, res)
-      }
-
-      const token = await this.commonService.generateToken(userExist);
-      const user = await this.userModel.findByIdAndUpdate(userExist._id, { apiToken: token }).lean().exec();
-      const userData = { ...user };
-      delete userData.password;
-      delete userData.resetPasswordCode;
-      return response('user.auth.logIn.success', RESPONSE_STATUS_CODES.success, res, { token, user: userData })
-    } catch (error) {
-      Logger.error('\n Admin Login Err : ', error);
-      return response('error.admin.auth.logIn', RESPONSE_STATUS_CODES.serverError, res)
+    let { email, password } = req.body;
+    let userExist = await this.userModel.findOne({ email, userType: UserTypes.admin }).lean().exec();
+    if (!userExist) {
+      return response('common.userNotFound', RESPONSE_STATUS_CODES.notFound, res)
     }
+    const comparePassword = await bcrypt.compare(password, userExist.password);
+    if (!comparePassword) {
+      return response('user.auth.logIn.invalidPassword', RESPONSE_STATUS_CODES.badRequest, res)
+    }
+
+    const token = await this.commonService.generateToken(userExist);
+    const user = await this.userModel.findByIdAndUpdate(userExist._id, { apiToken: token }).lean().exec();
+    const userData = { ...user };
+    delete userData.password;
+    delete userData.resetPasswordCode;
+    return response('user.auth.logIn.success', RESPONSE_STATUS_CODES.success, res, { token, user: userData })
   }
 
   async signUpForUser(req: Request, res: Response) {
-    try {
-      const userInfo = req.body;
-      const { email, password, name, socialMediaType, socialMediaId } = userInfo
-      if ((email && password && name) || (socialMediaType && socialMediaId)) {
-        const userWithEmailAlreadyInDB = await this.userModel.findOne({ email: email }).lean().exec();
-        if (userWithEmailAlreadyInDB) {
-          return response('user.auth.signUp.existWithEmail', RESPONSE_STATUS_CODES.badRequest, res)
-        } else {
-          userInfo.userType = UserTypes.user;
-          if (password) {
-            userInfo.password = await bcrypt.hash(password, saltRounds);
-          }
-          let createUser = await this.userModel.create(userInfo);
-          return response('user.auth.signUp.success', RESPONSE_STATUS_CODES.success, res, createUser)
+    const userInfo = req.body;
+    const { email, password, name, socialMediaType, socialMediaId } = userInfo
+    if ((email && password && name) || (socialMediaType && socialMediaId)) {
+      const userWithEmailAlreadyInDB = await this.userModel.findOne({ email: email }).lean().exec();
+      if (userWithEmailAlreadyInDB) {
+        return response('user.auth.signUp.existWithEmail', RESPONSE_STATUS_CODES.badRequest, res)
+      } else {
+        userInfo.userType = UserTypes.user;
+        if (password) {
+          userInfo.password = await bcrypt.hash(password, saltRounds);
         }
+        let createUser = await this.userModel.create(userInfo);
+        return response('user.auth.signUp.success', RESPONSE_STATUS_CODES.success, res, createUser)
       }
-      return response('common.invalidData', RESPONSE_STATUS_CODES.badRequest, res)
-    } catch (error) {
-      Logger.error('\n Admin Sign Up Err : ', error);
-      return response('error.user.auth.signUp', RESPONSE_STATUS_CODES.serverError, res)
     }
+    return response('common.invalidData', RESPONSE_STATUS_CODES.badRequest, res)
   }
 
   async loginForUser(req: Request, res: Response) {
-    try {
-      const { email, password, socialMediaType, socialMediaId } = req.body;
-      if ((email && password) || (socialMediaType && socialMediaId)) {
-        let userExist = await this.userModel.findOne({ email, userType: UserTypes.user });
-        if (!userExist) {
-          return response('common.userNotFound', RESPONSE_STATUS_CODES.notFound, res)
-        }
-
-        if (password) {
-          const comparePassword = await bcrypt.compare(password, userExist.password);
-          if (!comparePassword) {
-            return response('user.auth.logIn.invalidPassword', RESPONSE_STATUS_CODES.badRequest, res)
-          }
-        }
-
-        const token = await this.commonService.generateToken(userExist);
-        const userData = await this.userModel.findByIdAndUpdate(userExist._id, { apiToken: token }, { new: true }).lean().exec();
-        delete userData.password;
-
-        return response('user.auth.logIn.success', RESPONSE_STATUS_CODES.success, res, { token, user: userData })
+    const { email, password, socialMediaType, socialMediaId } = req.body;
+    if ((email && password) || (socialMediaType && socialMediaId)) {
+      let userExist = await this.userModel.findOne({ email, userType: UserTypes.user });
+      if (!userExist) {
+        return response('common.userNotFound', RESPONSE_STATUS_CODES.notFound, res)
       }
-      return response('common.invalidData', RESPONSE_STATUS_CODES.badRequest, res)
-    } catch (error) {
-      Logger.error('\n Admin Login Err : ', error);
-      return response('error.user.auth.logIn', RESPONSE_STATUS_CODES.serverError, res)
+
+      if (password) {
+        const comparePassword = await bcrypt.compare(password, userExist.password);
+        if (!comparePassword) {
+          return response('user.auth.logIn.invalidPassword', RESPONSE_STATUS_CODES.badRequest, res)
+        }
+      }
+
+      const token = await this.commonService.generateToken(userExist);
+      const userData = await this.userModel.findByIdAndUpdate(userExist._id, { apiToken: token }, { new: true }).lean().exec();
+      delete userData.password;
+
+      return response('user.auth.logIn.success', RESPONSE_STATUS_CODES.success, res, { token, user: userData })
     }
+    return response('common.invalidData', RESPONSE_STATUS_CODES.badRequest, res)
   }
 
   async forgotPassword(req: Request, res: Response) {
-    try {
-      const { email } = req.body;
-      const userExist = await this.userModel.findOne({ email }).lean().exec();
-      if (!userExist) {
-        return response('common.emailNotExiste', RESPONSE_STATUS_CODES.notFound, res)
-      }
-      const code = Math.floor(100000 + Math.random() * 900000);
-      // const code = 123456
-      sendMail('public/forgotPassword.ejs', email, { code: code })
-      await this.userModel.findOneAndUpdate({ email }, { resetPasswordCode: code });
-      return response('user.auth.resetPassword.code', RESPONSE_STATUS_CODES.success, res, { code })
-    } catch (error) {
-      throw error;
+    const { email } = req.body;
+    const userExist = await this.userModel.findOne({ email }).lean().exec();
+    if (!userExist) {
+      return response('common.emailNotExiste', RESPONSE_STATUS_CODES.notFound, res)
     }
+    const code = Math.floor(100000 + Math.random() * 900000);
+    // const code = 123456
+    sendMail('public/forgotPassword.ejs', email, { code: code })
+    await this.userModel.findOneAndUpdate({ email }, { resetPasswordCode: code });
+    return response('user.auth.resetPassword.code', RESPONSE_STATUS_CODES.success, res, { code })
   }
 
   async resetPassword(req: Request, res: Response) {
-    try {
-      const { email, newPassword, code } = req.body;
-      let userExist = await this.userModel.findOne({ email })
-      if (!userExist) {
-        return response('common.emailNotExist', RESPONSE_STATUS_CODES.notFound, res)
-      }
-      if (userExist.resetPasswordCode !== code) {
-        return response('user.auth.changePassword.invalidCode', RESPONSE_STATUS_CODES.badRequest, res)
-      }
-      userExist.password = await bcrypt.hash(newPassword, saltRounds);
-      userExist.resetPasswordCode = null;
-      userExist.save()
-      return response('user.auth.changePassword.passwordSuccess', RESPONSE_STATUS_CODES.success, res)
-    } catch (error) {
-      throw error;
+    const { email, newPassword, code } = req.body;
+    let userExist = await this.userModel.findOne({ email })
+    if (!userExist) {
+      return response('common.emailNotExist', RESPONSE_STATUS_CODES.notFound, res)
     }
+    if (userExist.resetPasswordCode !== code) {
+      return response('user.auth.changePassword.invalidCode', RESPONSE_STATUS_CODES.badRequest, res)
+    }
+    userExist.password = await bcrypt.hash(newPassword, saltRounds);
+    userExist.resetPasswordCode = null;
+    userExist.save()
+    return response('user.auth.changePassword.passwordSuccess', RESPONSE_STATUS_CODES.success, res)
   }
 
   async changePassword(req: any, res: Response) {
-    try {
-      const { oldPassword, newPassword } = req.body;
-      let findUserIsExist = await this.userModel.findById(req.user._id);
-      if (findUserIsExist) {
-        const comparePassword = await bcrypt.compare(oldPassword, findUserIsExist.password);
-        if (!comparePassword) {
-          return response('user.auth.changePassword.oldPasswordIncorrect', RESPONSE_STATUS_CODES.badRequest, res)
-        } else {
-          findUserIsExist.password = await bcrypt.hash(newPassword, saltRounds);
-          findUserIsExist.save()
-          return response('user.auth.changePassword.passwordSuccess', RESPONSE_STATUS_CODES.success, res)
-        }
+    const { oldPassword, newPassword } = req.body;
+    let findUserIsExist = await this.userModel.findById(req.user._id);
+    if (findUserIsExist) {
+      const comparePassword = await bcrypt.compare(oldPassword, findUserIsExist.password);
+      if (!comparePassword) {
+        return response('user.auth.changePassword.oldPasswordIncorrect', RESPONSE_STATUS_CODES.badRequest, res)
+      } else {
+        findUserIsExist.password = await bcrypt.hash(newPassword, saltRounds);
+        findUserIsExist.save()
+        return response('user.auth.changePassword.passwordSuccess', RESPONSE_STATUS_CODES.success, res)
       }
-      return response('common.userNotFound', RESPONSE_STATUS_CODES.notFound, res)
-    } catch (error) {
-      throw error;
     }
+    return response('common.userNotFound', RESPONSE_STATUS_CODES.notFound, res)
   }
 
   //Add default admin
   async onModuleInit() {
-    try {
-      const adminExists = await this.userModel.find({ userType: UserTypes.admin }).lean().exec()
-      if (!adminExists.length) {
-        let adminObj = {
-          userType: UserTypes.admin,
-          name: 'Default Admin Created By Server',
-          username: "Reminder App Admin",
-          email: "admin.reminder-app@gmail.com",
-          password: "12345678"
-        };
-        adminObj.password = await bcrypt.hash(adminObj.password, saltRounds);
-        await this.userModel.create(adminObj);
-        console.log('======= Default admin created =======')
-      }
-    } catch (error) {
-      console.log('error', error)
-      throw new HttpException(
-        "Error while adding default admin",
-        error.message
-      );
+    const adminExists = await this.userModel.find({ userType: UserTypes.admin }).lean().exec()
+    if (!adminExists.length) {
+      let adminObj = {
+        userType: UserTypes.admin,
+        name: 'Default Admin Created By Server',
+        username: "Reminder App Admin",
+        email: "admin.reminder-app@gmail.com",
+        password: "12345678"
+      };
+      adminObj.password = await bcrypt.hash(adminObj.password, saltRounds);
+      await this.userModel.create(adminObj);
+      console.log('======= Default admin created =======')
     }
   }
-
 }

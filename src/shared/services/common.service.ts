@@ -19,17 +19,12 @@ export class CommonService {
 
     // This will generate api token for user
     async generateToken(user: User) {
-        try {
-            const { email, _id } = user;
-            const payload = {
-                _id,
-                // email,
-            };
-            return this.jwtService.sign(payload, this.jwtConfig);
-        } catch (error) {
-            Logger.error('Error while generating token', error);
-            return null;
-        }
+        const { email, _id } = user;
+        const payload = {
+            _id,
+            // email,
+        };
+        return this.jwtService.sign(payload, this.jwtConfig);
     }
 
 

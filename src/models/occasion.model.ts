@@ -4,8 +4,18 @@ export const OccasionSchema = new mongoose.Schema({
     occasionName: {
         type: String,
         required: true,
-    }, description: {
+    },
+    description: {
         type: String,
         default: null
+    },
+    countryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Country',
+        default: null
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });

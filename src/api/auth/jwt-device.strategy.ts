@@ -21,7 +21,7 @@ export class JwtDeviceStrategy extends PassportStrategy(Strategy, 'jwt-device') 
 
   async validate(request: Request, payload: JwtPayload) {
     const token = request.headers['authorization'];
-    payload.token = token.slice(7, token.length).trimLeft();
+    payload.apiToken = token.slice(7, token.length).trimLeft();
 
     const user = await this.authService.validateUser(payload);
     if (!user) {
