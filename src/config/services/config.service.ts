@@ -32,6 +32,7 @@ export class ConfigService {
         .default("dev"),
       PORT: Joi.number().default(3000),
       JWT_SECRET: Joi.string().required(),
+      SENTRY_KEY: Joi.string().required(),
       JWT_EXPIRATION_DAYS: Joi.string().default("30d"),
       MONGO_URI: Joi.string().required(),
       SERVER_URL: Joi.string().required()

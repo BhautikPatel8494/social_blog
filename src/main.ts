@@ -1,15 +1,16 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import i18n from 'i18n';
+import * as Sentry from '@sentry/node';
+import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './config/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-  const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter());
+  Sentry.init({ dsn: 'https://551d6083eb7b40fca40bef22448e91c9@o508551.ingest.sentry.io/5601203', environment: 'development' });
   app.enableCors({ origin: true });
   app.set('view engine', 'ejs');
   app.use(i18n.init);

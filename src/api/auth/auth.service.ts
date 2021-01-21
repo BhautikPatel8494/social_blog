@@ -73,47 +73,64 @@ export class AuthService implements OnModuleInit {
   async signUpForUser(req: Request, res: Response) {
     const userInfo = req.body;
     const { email, password, name, socialMediaType, socialMediaId } = userInfo
-    if ((email && password && name) || (socialMediaType && socialMediaId)) {
+    if (email) {
       const userWithEmailAlreadyInDB = await this.userModel.findOne({ email: email }).lean().exec();
-      if (userWithEmailAlreadyInDB) {
-        return response('user.auth.signUp.existWithEmail', RESPONSE_STATUS_CODES.badRequest, res)
-      } else {
-        userInfo.userType = UserTypes.user;
-        if (password) {
-          userInfo.password = await bcrypt.hash(password, saltRounds);
-        }
-        let createUser = await this.userModel.create(userInfo);
-        const token = await this.commonService.generateToken(createUser);
-        createUser.apiToken = token
-        createUser.save()
-        return response('user.auth.signUp.success', RESPONSE_STATUS_CODES.success, res, { token, user: createUser })
-      }
+      if (userWithEmailAlreadyInDB) return response('user.auth.signUp.existWithEmail', RESPONSE_STATUS_CODES.badRequest, res)
     }
-    return response('common.invalidData', RESPONSE_STATUS_CODES.badRequest, res)
+
+    let isNeedToRegisterWithObj = null;
+    if (email && password && name) {
+      const encryptedPassword = await bcrypt.hash(password, saltRounds);
+      isNeedToRegisterWithObj = { email, password: encryptedPassword }
+    }
+
+    else if (socialMediaType && socialMediaId) {
+      const userExistWithSameCredantial = await this.userModel.findOne({ socialMediaType, socialMediaId }).lean().exec();
+      if (userExistWithSameCredantial) return response('user.auth.signUp.existWithSameCredential', RESPONSE_STATUS_CODES.badRequest, res)
+      isNeedToRegisterWithObj = { email, socialMediaType, socialMediaId }
+    }
+
+    if (isNeedToRegisterWithObj) {
+      isNeedToRegisterWithObj.userType = UserTypes.user;
+      let createUser = await this.userModel.create(isNeedToRegisterWithObj);
+      const token = await this.commonService.generateToken(createUser);
+      createUser.apiToken = token
+      createUser.save()
+      return response('user.auth.signUp.success', RESPONSE_STATUS_CODES.success, res, { token, user: createUser })
+    } else {
+      return response('common.invalidData', RESPONSE_STATUS_CODES.badRequest, res)
+    }
   }
 
   async loginForUser(req: Request, res: Response) {
     const { email, password, socialMediaType, socialMediaId } = req.body;
-    if ((email && password) || (socialMediaType && socialMediaId)) {
-      let userExist = await this.userModel.findOne({ email, userType: UserTypes.user });
-      if (!userExist) {
-        return response('common.userNotFound', RESPONSE_STATUS_CODES.notFound, res)
-      }
-
-      if (password) {
-        const comparePassword = await bcrypt.compare(password, userExist.password);
-        if (!comparePassword) {
-          return response('user.auth.logIn.invalidPassword', RESPONSE_STATUS_CODES.badRequest, res)
-        }
-      }
-
-      const token = await this.commonService.generateToken(userExist);
-      const userData = await this.userModel.findByIdAndUpdate(userExist._id, { apiToken: token }, { new: true }).lean().exec();
-      delete userData.password;
-
-      return response('user.auth.logIn.success', RESPONSE_STATUS_CODES.success, res, { token, user: userData })
+    if (email) {
+      const userWithEmailAlreadyInDB = await this.userModel.findOne({ email: email, userType: UserTypes.user }).lean().exec();
+      if (!userWithEmailAlreadyInDB) return response('common.userNotFound', RESPONSE_STATUS_CODES.notFound, res)
     }
-    return response('common.invalidData', RESPONSE_STATUS_CODES.badRequest, res)
+
+    let isValidUserObj = null
+    if (email && password) {
+      let userExist = await this.userModel.findOne({ email, userType: UserTypes.user });
+      const comparePassword = await bcrypt.compare(password, userExist.password);
+      if (!comparePassword) {
+        return response('user.auth.logIn.invalidPassword', RESPONSE_STATUS_CODES.badRequest, res)
+      }
+      isValidUserObj = userExist
+    } else if (socialMediaType && socialMediaId) {
+      const userExistWithSameCredantial = await this.userModel.findOne({ socialMediaType, socialMediaId });
+      if (userExistWithSameCredantial) isValidUserObj = userExistWithSameCredantial
+    }
+
+    if (isValidUserObj) {
+      const token = await this.commonService.generateToken(isValidUserObj);
+      isValidUserObj.apiToken = token;
+      isValidUserObj.save()
+      delete isValidUserObj.password;
+      return response('user.auth.logIn.success', RESPONSE_STATUS_CODES.success, res, { token, user: isValidUserObj })
+    } else {
+      return response('common.userNotFound', RESPONSE_STATUS_CODES.notFound, res)
+    }
   }
 
   async forgotPassword(req: Request, res: Response) {

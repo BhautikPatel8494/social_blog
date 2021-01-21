@@ -41,7 +41,7 @@ export class CountryService {
 
     async deleteCountryFromList(req: Request, res: Response) {
         const { id } = req.params
-        let findCountryById = await this.countryModel.findById(id).lean().exec();
+        let findCountryById = await this.countryModel.findById(id);
         if (!findCountryById) {
             return response('features.country.notFound', RESPONSE_STATUS_CODES.notFound, res)
         }

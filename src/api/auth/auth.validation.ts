@@ -4,11 +4,22 @@ import { IsString, IsEmail, MinLength, IsOptional, IsNumber, IsEnum, IsNotEmpty 
 export class SignInForUser {
 
   @IsEmail()
+  @IsOptional()
   email: string;
 
   @IsString()
+  @IsOptional()
   @MinLength(6)
   password: string;
+
+  @IsNumber()
+  @IsOptional()
+  @IsEnum(Object.values(SocialMediaTypes))
+  socialMediaType: number;
+
+  @IsString()
+  @IsOptional()
+  socialMediaId: string;
 }
 
 export class ForgotPassword {

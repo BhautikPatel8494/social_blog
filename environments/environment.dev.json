@@ -3,6 +3,7 @@
     "PORT": 4000,
     "JWT_EXPIRATION_DAYS": "30d",
     "JWT_SECRET": "bA2xcjpf8y5aSUFsNB2qN5yymUBSs6es3qHoFpGkec75RCeBb8cpKauGefw5qy4",
+    "SENTRY_KEY":"https://551d6083eb7b40fca40bef22448e91c9@o508551.ingest.sentry.io/5601203",
     "MONGO_URI": "mongodb://localhost:27017/reminderApp",
     "SERVER_URL": "http://localhost:4000"
 }
