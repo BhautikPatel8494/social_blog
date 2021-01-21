@@ -35,7 +35,9 @@ export class OccasionService {
             const countryExistWithSameName = await this.countryModel.findById(countryId).lean().exec();
             if (!countryExistWithSameName) countryId = null
         }
-        occasionInfoInDb = { occasionName, description, countryId }
+        occasionInfoInDb.occasionName = occasionName
+        occasionInfoInDb.description = description
+        occasionInfoInDb.countryId = countryId
         occasionInfoInDb.save()
         return response('features.occasion.updated', RESPONSE_STATUS_CODES.success, res, occasionInfoInDb)
     }
@@ -88,11 +90,11 @@ export class OccasionService {
             if (oData.countryName[0]) {
                 formattedList.countryWiseOccasionList.push({
                     countryName: oData.countryName[0].name,
-                    occations: oData.occations.map(oList => ({ description: oList.description, occasionName: oList.occasionName }))
+                    occations: oData.occations.map(({ description, occasionName, _id }) => ({ description, occasionName, _id }))
                 })
             } else {
                 formattedList.commonOccasions.push(
-                    ...oData.occations.map(oList => ({ description: oList.description, occasionName: oList.occasionName }))
+                    ...oData.occations.map(({ description, occasionName, _id }) => ({ description, occasionName, _id }))
                 )
             }
         })
