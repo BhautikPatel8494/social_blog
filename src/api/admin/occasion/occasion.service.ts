@@ -44,20 +44,15 @@ export class OccasionService {
 
     async deleteOccasionRecord(req: Request, res: Response) {
         const { id } = req.params
-        let occasionInfoInDb = await this.occasionModel.findById(id);
+        let occasionInfoInDb = await this.occasionModel.findByIdAndDelete(id);
         if (!occasionInfoInDb) {
             return response('features.occasion.notExist', RESPONSE_STATUS_CODES.notFound, res)
         }
-        occasionInfoInDb.isDeleted = true
-        occasionInfoInDb.save()
         return response('features.occasion.deleted', RESPONSE_STATUS_CODES.success, res)
     }
 
     async getListOfOccasion(req: Request, res: Response) {
         const query = [
-            {
-                $match: { isDeleted: false }
-            },
             {
                 $lookup: {
                     from: 'countries',
@@ -90,6 +85,7 @@ export class OccasionService {
             if (oData.countryName[0]) {
                 formattedList.countryWiseOccasionList.push({
                     countryName: oData.countryName[0].name,
+                    countryId: oData.countryName[0]._id,
                     occations: oData.occations.map(({ description, occasionName, _id }) => ({ description, occasionName, _id }))
                 })
             } else {
