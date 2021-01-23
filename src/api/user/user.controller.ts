@@ -2,9 +2,9 @@ import { Body, Controller, HttpCode, Post, Req, Res, UseGuards, ValidationPipe }
 import { Response, Request } from 'express';
 
 import { AuthGuard } from '@nestjs/passport';
-import { Roles } from '@root/middleware/role.decorator';
-import { RolesGuard } from '@root/middleware/roles.gaurd';
-import { UserTypes } from '@root/models/user.model';
+import { Roles } from '../../middleware/role.decorator';
+import { RolesGuard } from '../../middleware/roles.gaurd';
+import { UserTypes } from '../../models/user.model';
 import { UserService } from './user.service';
 import { ChangeSubscriptionStatus } from './user.validation';
 

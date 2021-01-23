@@ -1,5 +1,5 @@
 // External level import
-import i18n from '@config/i18n.config';
+import i18n from '../../config/i18n.config';
 import { languageCodes } from '../constants';
 import { ObjectLiteral } from '../interface/common.interface';
 import { Response } from 'express';

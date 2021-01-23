@@ -4,9 +4,9 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { AuthService } from './auth.service';
 import { SignUpForUser, SignInForUser, ChangePassword, ForgotPassword, ResetPassword, DeviceTokenFields } from './auth.validation';
-import { RolesGuard } from '@root/middleware/roles.gaurd';
-import { Roles } from '@root/middleware/role.decorator';
-import { UserTypes } from '@root/models/user.model';
+import { RolesGuard } from '../../middleware/roles.gaurd';
+import { Roles } from '../../middleware/role.decorator';
+import { UserTypes } from '../../models/user.model';
 
 @Controller('/api/v1')
 export class AuthDeviceController {

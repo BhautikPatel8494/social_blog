@@ -2,9 +2,9 @@ import { Controller, Req, Res, Post, Get, Delete, Put, HttpCode, UseGuards, Vali
 import { AuthGuard } from "@nestjs/passport";
 import { CountryService } from './country.service'
 import { Response, Request } from 'express';
-import { RolesGuard } from "@middleware/roles.gaurd";
-import { Roles } from '@middleware/role.decorator'
-import { UserTypes } from '@root/models/user.model';
+import { RolesGuard } from "../../../middleware/roles.gaurd";
+import { Roles } from '../../../middleware/role.decorator'
+import { UserTypes } from '../../../models/user.model';
 import { UpsertCountry } from './country.validation';
 
 @Controller('api/v1/country')

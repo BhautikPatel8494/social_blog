@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Gift } from '@shared/interface/model.interface';
+import { Gift } from '../../../shared/interface/model.interface';
 
 @Injectable()
 export class GiftService {
