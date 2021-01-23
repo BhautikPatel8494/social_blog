@@ -25,6 +25,16 @@ export interface Occasion extends Document {
   readonly description: string;
 }
 
+export interface UserReminder extends Document {
+  readonly _id: string;
+  readonly occasionDate: Date;
+  readonly genderOfPerson: number;
+  readonly relationsWithPerson: number;
+  readonly isNeedToShowGiftRecommendations: boolean;
+  readonly remindMeOn: string[];
+  readonly isNeedToRepeatEveryYear: boolean;
+}
+
 export interface Country extends Document {
   readonly _id: string;
   readonly name: string;

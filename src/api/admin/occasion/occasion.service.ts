@@ -96,4 +96,9 @@ export class OccasionService {
         })
         return response('features.occasion.list.success', RESPONSE_STATUS_CODES.success, res, formattedList)
     }
+
+    async getListOfOccasionForUser(req: Request, res: Response) {
+        let listOfOccasions = await this.occasionModel.find({});
+        return response('features.occasion.list.success', RESPONSE_STATUS_CODES.success, res, listOfOccasions)
+    }
 }

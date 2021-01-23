@@ -11,6 +11,7 @@
 	"user.auth.changePassword.invalidCode": "Invalid Code. Please enter valid code.",
 	"user.auth.changePassword.passwordSuccess": "Password updated successfully",
 	"user.auth.resetPassword.code": "Please check your email for reset password code.",
+	"user.auth.signUp.existWithSameCredential": "User already exist with same social media account.",
 	"admin.auth.signUp.failed": "Failed to register admin. Please try again later.",
 	"admin.auth.signUp.success": "Admin created successfully.",
 	"features.country.alreadyExist": "Country already exists.",
@@ -28,9 +29,9 @@
 	"features.occasion.updated": "Occasion updated successfully.",
 	"features.occasion.deleted": "Occasion deleted successfully.",
 	"features.occasion.list.success": "Occasion list get successfully.",
-	"error.user.auth.logIn": "Failed to login for user.",
-	"error.user.auth.signUp": "Failed to sign up for user.",
-	"error.admin.auth.logIn": "Failed to login up for Admin.",
-	"error.admin.auth.signUp": "Failed to sign up for Admin.",
-	"user.auth.signUp.existWithSameCredential": "User already exist with same social media account."
+	"features.reminder.create": "Reminder Created successfully.",
+	"features.reminder.updated": "Reminder Updated successfully.",
+	"features.reminder.notFound": "Reminder not found.",
+	"features.reminder.deleted": "Reminder deleted successfully.",
+	"features.reminder.listGet": "Reminder list get successfully."
 }

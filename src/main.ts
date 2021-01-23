@@ -1,5 +1,5 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import i18n from 'i18n';
 import * as Sentry from '@sentry/node';
@@ -20,7 +20,9 @@ async function bootstrap() {
     res.header("Access-Control-Allow-Headers", "Content-Type, Accept");
     next();
   });
-  await app.listen(process.env.PORT || 5000);
+  await app.listen(process.env.PORT || 5000).then(() => {
+    Logger.verbose(`Server is running on PORT ${process.env.PORT || 5000}`)
+  });
 
 }
 bootstrap();

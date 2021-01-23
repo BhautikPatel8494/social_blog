@@ -12,6 +12,8 @@ import { CommonService } from './services/common.service';
 import { CountryService } from '@api/admin/country/country.service';
 import { GiftService } from '@api/admin/gift/gift.service';
 import { OccasionService } from '@api/admin/occasion/occasion.service';
+import { UsersRemindersSchema } from '@models/userReminders.model';
+import { UserReminderService } from '@root/api/user/userReminder/userReminder.service';
 
 @Global()
 @Module({
@@ -20,7 +22,8 @@ import { OccasionService } from '@api/admin/occasion/occasion.service';
       { name: 'User', schema: UsersSchema },
       { name: 'Gift', schema: GiftSchema },
       { name: 'Occasion', schema: OccasionSchema },
-      { name: 'Country', schema: CountrySchema }
+      { name: 'Country', schema: CountrySchema },
+      { name: 'Reminders', schema: UsersRemindersSchema }
     ]),
     AuthModule,
   ],
@@ -29,6 +32,7 @@ import { OccasionService } from '@api/admin/occasion/occasion.service';
     UserService,
     GiftService,
     OccasionService,
+    UserReminderService,
     CountryService,
     CommonService
   ],
@@ -36,6 +40,7 @@ import { OccasionService } from '@api/admin/occasion/occasion.service';
     AuthService,
     UserService,
     GiftService,
+    UserReminderService,
     OccasionService,
     CountryService,
     CommonService

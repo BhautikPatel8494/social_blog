@@ -40,8 +40,18 @@ export class OccasionController {
 
     @Get('/')
     @HttpCode(200)
+    @UseGuards(AuthGuard("jwt-device"), RolesGuard)
+    @Roles(UserTypes.admin)
     async getListOfOccasion(@Req() req: Request, @Res() res: Response) {
         return await this.occasionService.getListOfOccasion(req, res);
+    }
+
+    @Get('/list')
+    @HttpCode(200)
+    @UseGuards(AuthGuard("jwt-device"), RolesGuard)
+    @Roles(UserTypes.user)
+    async getListOfOccasionForUser(@Req() req: Request, @Res() res: Response) {
+        return await this.occasionService.getListOfOccasionForUser(req, res);
     }
 
 }
