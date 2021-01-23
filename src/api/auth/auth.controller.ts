@@ -3,7 +3,10 @@ import { Response, Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AuthService } from './auth.service';
-import { SignUpForUser, SignInForUser, ChangePassword, ForgotPassword, ResetPassword } from './auth.validation';
+import { SignUpForUser, SignInForUser, ChangePassword, ForgotPassword, ResetPassword, DeviceTokenFields } from './auth.validation';
+import { RolesGuard } from '@root/middleware/roles.gaurd';
+import { Roles } from '@root/middleware/role.decorator';
+import { UserTypes } from '@root/models/user.model';
 
 @Controller('/api/v1')
 export class AuthDeviceController {
@@ -59,5 +62,14 @@ export class AuthDeviceController {
   @UseGuards(AuthGuard('jwt-device'))
   async changePassword(@Body(new ValidationPipe()) data: ChangePassword, @Req() req: Request, @Res() res: Response) {
     return await this.authService.changePassword(req, res);
+  }
+
+  // Device Token
+  @Post('/user/device-token')
+  @HttpCode(200)
+  @UseGuards(AuthGuard("jwt-device"), RolesGuard)
+  @Roles(UserTypes.user)
+  async addDeviceTokenInList(@Body(new ValidationPipe()) data: DeviceTokenFields, @Req() req: Request, @Res() res: Response) {
+    return await this.authService.addDeviceTokenInList(req, res);
   }
 }

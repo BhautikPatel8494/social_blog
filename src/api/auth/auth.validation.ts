@@ -75,9 +75,22 @@ export class SignUpForUser {
 export class ChangePassword {
 
   @IsString()
+  @IsNotEmpty()
   oldPassword: string;
 
   @IsString()
+  @IsNotEmpty()
   newPassword: string;
+}
+
+export class DeviceTokenFields {
+
+  @IsString()
+  @IsNotEmpty()
+  deviceToken: string;
+
+  @IsString()
+  @IsNotEmpty()
+  deviceType: string;
 }
 

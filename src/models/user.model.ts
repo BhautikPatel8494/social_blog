@@ -59,5 +59,17 @@ export const UsersSchema = new mongoose.Schema({
     socialMediaId: {
         type: String,
         default: null,
+    },
+    deviceTokenList: [{
+        deviceType: String,
+        deviceToken: String
+    }],
+    isUserSubscriptionEnable: {
+        type: Boolean,
+        default: false
+    },
+    freeRemindersAvailable: {
+        type: Number,
+        default: 50
     }
 }, { timestamps: true });

@@ -9,6 +9,10 @@ export const OccasionSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    occasionImage: {
+        type: String,
+        default: null
+    },
     countryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Country',

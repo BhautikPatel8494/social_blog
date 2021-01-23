@@ -177,6 +177,20 @@ export class AuthService implements OnModuleInit {
     return response('common.userNotFound', RESPONSE_STATUS_CODES.notFound, res)
   }
 
+  async addDeviceTokenInList(req: any, res: Response) {
+    const { deviceToken, deviceType } = req.body;
+    if (req.user.deviceTokenList) {
+      const isTokenAlreadyEixts = req.user.deviceTokenList.find(dData => dData.deviceType === deviceType && dData.deviceToken === deviceToken)
+      if (isTokenAlreadyEixts) {
+        return response('user.auth.deviceToken.exist', RESPONSE_STATUS_CODES.success, res)
+      }
+    }
+    let updateDeviceTokenList = req.user.deviceTokenList ? req.user.deviceTokenList : []
+    updateDeviceTokenList.push({ deviceType, deviceToken })
+    await this.userModel.findByIdAndUpdate(req.user._id, { deviceTokenList: updateDeviceTokenList })
+    return response('user.auth.deviceToken.success', RESPONSE_STATUS_CODES.success, res)
+  }
+
   //Add default admin
   async onModuleInit() {
     const adminExists = await this.userModel.find({ userType: UserTypes.admin }).lean().exec()

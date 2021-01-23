@@ -9,8 +9,16 @@ export interface User extends Document {
   readonly userType: string;
   readonly contactNumber: string;
   readonly deviceTokens: Array<string>;
+  readonly deviceTokenList: Array<DeviceTone>;
+  readonly isUserSubscriptionEnable: boolean;
+  readonly freeRemindersAvailable: number;
   apiToken: string;
   readonly birthDate: Date;
+}
+
+interface DeviceTone {
+  deviceToken: string,
+  deviceType: string
 }
 
 export interface Gift extends Document {
