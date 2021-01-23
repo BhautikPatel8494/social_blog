@@ -66,9 +66,9 @@ export class UpdateReminder {
   @IsOptional()
   occasionName: string;
 
-  @IsDate()
+  @IsString()
   @IsOptional()
-  occasionDate: Date;
+  occasionDate: string;
 
   @IsString()
   @IsOptional()

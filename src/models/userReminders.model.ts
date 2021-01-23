@@ -12,7 +12,7 @@ export const UsersRemindersSchema = new mongoose.Schema({
         required: true,
     },
     occasionDate: {
-        type: Date,
+        type: String,
         default: null
     },
     description: {

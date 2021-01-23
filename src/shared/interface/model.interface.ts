@@ -27,7 +27,7 @@ export interface Occasion extends Document {
 
 export interface UserReminder extends Document {
   readonly _id: string;
-  readonly occasionDate: Date;
+  readonly occasionDate: string;
   readonly genderOfPerson: number;
   readonly relationsWithPerson: number;
   readonly isNeedToShowGiftRecommendations: boolean;
