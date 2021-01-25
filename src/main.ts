@@ -2,8 +2,10 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import i18n from 'i18n';
+import * as fs from 'fs';
 import * as Sentry from '@sentry/node';
 import { AppModule } from './app.module';
+import { join } from 'path';
 import { AllExceptionsFilter } from './config/all-exceptions.filter';
 
 async function bootstrap() {
@@ -20,6 +22,14 @@ async function bootstrap() {
     res.header("Access-Control-Allow-Headers", "Content-Type, Accept");
     next();
   });
+  async function createFolder() {
+    let dir = './upload';
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+  }
+  await createFolder();
+  app.useStaticAssets(join(__dirname, '../upload'));
   await app.listen(process.env.PORT || 5000).then(() => {
     Logger.verbose(`Server is running on PORT ${process.env.PORT || 5000}`)
   });

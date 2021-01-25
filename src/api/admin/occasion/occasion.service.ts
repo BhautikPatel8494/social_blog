@@ -6,21 +6,28 @@ import { Response, Request } from 'express';
 import { Country, Occasion } from '@shared/interface/model.interface';
 import { response } from '@root/shared/services/sendResponse.service';
 import { RESPONSE_STATUS_CODES } from '@root/shared/constants';
+import { CommonService } from '@root/shared/services/common.service';
 @Injectable()
 export class OccasionService {
 
     constructor(
         @InjectModel('Occasion') private readonly occasionModel: Model<Occasion>,
+        private readonly commonService: CommonService,
         @InjectModel('Country') private readonly countryModel: Model<Country>,
     ) { }
 
-    async createOccasionInfo(req: Request, res: Response) {
-        let { occasionName, description, countryId } = req.body
+    async createOccasionInfo(file: any, req: Request, res: Response) {
+        let { countryId } = req.body
+        const insertData = req.body;
+        if (file && file.occasionImage && file.occasionImage.length) {
+            const uploadImage = await this.commonService.manageUploadImage(file, 'occasionImage', res)
+            insertData.occasionImage = uploadImage;
+        }
         if (countryId) {
             const countryExistWithSameName = await this.countryModel.findById(countryId).lean().exec();
             if (!countryExistWithSameName) countryId = null
         }
-        const createOccationRecord = await this.occasionModel.create({ occasionName, description, countryId });
+        const createOccationRecord = await this.occasionModel.create(insertData);
         return response('features.occasion.success', RESPONSE_STATUS_CODES.success, res, createOccationRecord)
     }
 

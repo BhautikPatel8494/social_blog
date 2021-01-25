@@ -5,7 +5,7 @@ import { Response, Request } from 'express';
 import { RolesGuard } from "@middleware/roles.gaurd";
 import { Roles } from '@middleware/role.decorator'
 import { UserTypes } from '@root/models/user.model';
-import { UpsertGiftCategory, UpsertGiftRecommendation } from './giftRecommendation.validation';
+import { ListOfGiftRecommendationForUser, UpsertGiftCategory, UpsertGiftRecommendation } from './giftRecommendation.validation';
 
 @Controller('api/v1/gift')
 export class GiftRecommendationController {
@@ -75,5 +75,11 @@ export class GiftRecommendationController {
     @HttpCode(200)
     async listGiftRecommendation(@Req() req: Request, @Res() res: Response) {
         return await this.giftService.listGiftRecommendation(req, res);
+    }
+
+    @Post('/user-gift')
+    @HttpCode(200)
+    async listOfRecommendationForUser(@Body(new ValidationPipe()) data: ListOfGiftRecommendationForUser, @Req() req: Request, @Res() res: Response) {
+        return await this.giftService.listOfRecommendationForUser(req, res);
     }
 }

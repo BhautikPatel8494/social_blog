@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { GiftRecommendation, GiftRecommendationCategory } from '@shared/interface/model.interface';
+import { GiftRecommendation, GiftRecommendationCategory, UserReminder } from '@shared/interface/model.interface';
 import { response } from '@root/shared/services/sendResponse.service';
 import { RESPONSE_STATUS_CODES } from '@root/shared/constants';
 import { Request } from 'express';
+import { ListOfGenderSelectionOptions } from '@root/api/user/userReminder/userReminder.validation';
 
 @Injectable()
 export class GiftService {
@@ -13,26 +14,28 @@ export class GiftService {
     constructor(
         @InjectModel('GiftRecommendation') private readonly giftRecommendationModel: Model<GiftRecommendation>,
         @InjectModel('GiftRecommendationCategory') private readonly giftRecommendationCategoryModel: Model<GiftRecommendationCategory>,
+        @InjectModel('Reminders') private readonly reminderModel: Model<UserReminder>,
     ) { }
 
     async addGiftRecommendationCategory(req: any, res: any) {
-        const { categoryName } = req.body;
+        const { categoryName, gender } = req.body;
         const alreadyExistWithSameName = await this.giftRecommendationCategoryModel.findOne({ categoryName }).lean().exec()
         if (alreadyExistWithSameName) {
             return response('features.gift.category.alreadyExist', RESPONSE_STATUS_CODES.badRequest, res)
         }
-        const createGiftCardCategory = await this.giftRecommendationCategoryModel.create({ categoryName });
+        const createGiftCardCategory = await this.giftRecommendationCategoryModel.create({ categoryName, gender });
         return response('features.gift.category.success', RESPONSE_STATUS_CODES.success, res, createGiftCardCategory)
     }
 
     async updateGiftRecommendationCategory(req: Request, res: any) {
-        const { categoryName } = req.body;
+        const { categoryName, gender } = req.body;
         const { id } = req.params;
         let giftCategoryExist = await this.giftRecommendationCategoryModel.findById(id)
         if (!giftCategoryExist) {
             return response('features.gift.category.notFound', RESPONSE_STATUS_CODES.notFound, res)
         }
         giftCategoryExist.categoryName = categoryName
+        giftCategoryExist.gender = gender
         giftCategoryExist.save()
         return response('features.gift.category.updated', RESPONSE_STATUS_CODES.success, res, giftCategoryExist)
     }
@@ -82,7 +85,30 @@ export class GiftService {
     }
 
     async listGiftRecommendation(req: any, res: any) {
-        const listOfGift = await this.giftRecommendationModel.find().lean().exec()
-        return response('features.gift.list.success', RESPONSE_STATUS_CODES.success, res, listOfGift)
+        const listOfGiftRecommendation = await this.giftRecommendationModel.find({}).populate({
+            path: 'categoryId',
+            select: 'categoryName'
+        })
+        return response('features.gift.list.success', RESPONSE_STATUS_CODES.success, res, listOfGiftRecommendation)
+    }
+
+    async listOfRecommendationForUser(req: any, res: any) {
+        const { reminderId } = req.body
+        const getInfoAboutReminder = await this.reminderModel.findById(reminderId).lean().exec();
+        if (!getInfoAboutReminder) {
+            return response('features.reminder.notFound', RESPONSE_STATUS_CODES.success, res)
+        }
+        const result = []
+        const { genderOfPerson } = getInfoAboutReminder
+        const getCategoryListOfGift = await this.giftRecommendationCategoryModel.find({ gender: { $in: [genderOfPerson, ListOfGenderSelectionOptions.other] } }).lean().exec();
+        for (let i = 0; i < getCategoryListOfGift.length; i++) {
+            const categoryInfo = getCategoryListOfGift[i];
+            const getGiftRecommendation = await this.giftRecommendationModel.find({ categoryId: categoryInfo._id }).select('giftName url').lean().exec();
+            result.push({
+                categoryName: categoryInfo.categoryName,
+                giftProducts: getGiftRecommendation
+            })
+        }
+        return response('features.gift.list.success', RESPONSE_STATUS_CODES.success, res, result)
     }
 }

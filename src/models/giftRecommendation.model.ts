@@ -1,9 +1,10 @@
+import { ListOfGenderSelectionOptions } from '@root/api/user/userReminder/userReminder.validation';
 import * as mongoose from 'mongoose';
 
 export const GiftRecommendationSchema = new mongoose.Schema({
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'GiftRecommendation',
+        ref: 'GiftRecommendationCategory',
         requried: true
     },
     giftName: {
