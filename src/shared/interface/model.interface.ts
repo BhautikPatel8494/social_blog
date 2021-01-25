@@ -21,10 +21,15 @@ interface DeviceTone {
   deviceType: string
 }
 
-export interface Gift extends Document {
+export interface GiftRecommendation extends Document {
   readonly _id: string;
   readonly category: string;
   readonly description: string;
+}
+
+export interface GiftRecommendationCategory extends Document {
+  readonly _id: string;
+  readonly categoryName: string;
 }
 
 export interface Occasion extends Document {

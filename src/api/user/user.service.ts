@@ -18,4 +18,10 @@ export class UserService {
         return response('user.subscriptionStatus.changed', RESPONSE_STATUS_CODES.success, res)
     }
 
+    async updateUserProfile(req: any, res: Response) {
+        const { isUserSubscriptionEnable } = req.body;
+        await this.userModel.findByIdAndUpdate(req.user._id, { isUserSubscriptionEnable });
+        return response('user.subscriptionStatus.changed', RESPONSE_STATUS_CODES.success, res)
+    }
+
 }

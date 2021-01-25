@@ -14,6 +14,14 @@ export class UserController {
         private readonly userService: UserService,
     ) { }
 
+    @Post('/update-profile')
+    @HttpCode(200)
+    @UseGuards(AuthGuard("jwt-device"), RolesGuard)
+    @Roles(UserTypes.user)
+    async updateUserProfile(@Body(new ValidationPipe()) data: ChangeSubscriptionStatus, @Req() req: Request, @Res() res: Response) {
+        return await this.userService.updateUserProfile(req, res);
+    }
+
     @Post('/change-subscription-status')
     @HttpCode(200)
     @UseGuards(AuthGuard("jwt-device"), RolesGuard)
