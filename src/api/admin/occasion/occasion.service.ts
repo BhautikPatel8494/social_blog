@@ -31,12 +31,16 @@ export class OccasionService {
         return response('features.occasion.success', RESPONSE_STATUS_CODES.success, res, createOccationRecord)
     }
 
-    async updateOccasionInfo(req: Request, res: Response) {
+    async updateOccasionInfo(file: any, req: Request, res: Response) {
         let { occasionName, description, countryId } = req.body
         const { id } = req.params
         let occasionInfoInDb = await this.occasionModel.findById(id);
         if (!occasionInfoInDb) {
             return response('features.occasion.notExist', RESPONSE_STATUS_CODES.notFound, res)
+        }
+        if (file && file.occasionImage && file.occasionImage.length) {
+            const uploadImage = await this.commonService.manageUploadImage(file, 'occasionImage', res)
+            occasionInfoInDb.occasionImage = uploadImage;
         }
         if (countryId) {
             const countryExistWithSameName = await this.countryModel.findById(countryId).lean().exec();

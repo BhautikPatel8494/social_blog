@@ -44,8 +44,8 @@ export class OccasionController {
     )
     @UseGuards(AuthGuard("jwt-device"), RolesGuard)
     @Roles(UserTypes.admin)
-    async updateOccasionInfo(@Body(new ValidationPipe()) data: UpsertOccasion, @Req() req: Request, @Res() res: Response) {
-        return await this.occasionService.updateOccasionInfo(req, res);
+    async updateOccasionInfo(@UploadedFiles() files: { [key: string]: any }, @Body(new ValidationPipe()) data: UpsertOccasion, @Req() req: Request, @Res() res: Response) {
+        return await this.occasionService.updateOccasionInfo(files, req, res);
     }
 
     @Delete('/:id')
