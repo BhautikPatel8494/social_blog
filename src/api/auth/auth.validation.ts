@@ -1,4 +1,4 @@
-import { SocialMediaTypes } from '@root/models/user.model';
+import { SocialMediaTypes } from '../../models/user.model';
 import { IsString, IsEmail, MinLength, IsOptional, IsNumber, IsEnum, IsNotEmpty } from 'class-validator';
 
 export class SignInForUser {

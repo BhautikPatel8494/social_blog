@@ -1,7 +1,7 @@
 import * as Joi from "joi";
 import * as fs from "fs";
 import { SignOptions } from "jsonwebtoken";
-import { ObjectLiteral } from "@shared/interface/common.interface";
+import { ObjectLiteral } from "../../shared/interface/common.interface";
 export class ConfigService {
   private readonly envConfig: ObjectLiteral;
 

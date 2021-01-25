@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, Post, Put, Req, Res, UploadedFiles, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
-import { Roles } from '@middleware/role.decorator';
-import { RolesGuard } from '@middleware/roles.gaurd';
-import { UserTypes } from '@models/user.model';
+import { Roles } from '../../../middleware/role.decorator';
+import { RolesGuard } from '../../../middleware/roles.gaurd';
+import { UserTypes } from '../../../models/user.model';
 import { OccasionService } from './occasion.service';
 import { UpsertOccasion } from './occasion.validation';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
