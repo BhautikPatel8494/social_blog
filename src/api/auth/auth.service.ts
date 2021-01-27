@@ -138,13 +138,13 @@ export class AuthService implements OnModuleInit {
     const { email } = req.body;
     const userExist = await this.userModel.findOne({ email }).lean().exec();
     if (!userExist) {
-      return response('common.emailNotExiste', RESPONSE_STATUS_CODES.notFound, res)
+      return response('common.emailNotExist', RESPONSE_STATUS_CODES.notFound, res)
     }
     const code = Math.floor(100000 + Math.random() * 900000);
     // const code = 123456
     sendMail('public/forgotPassword.ejs', email, { code: code })
     await this.userModel.findOneAndUpdate({ email }, { resetPasswordCode: code });
-    return response('user.auth.resetPassword.code', RESPONSE_STATUS_CODES.success, res, { code })
+    return response('user.auth.resetPassword.code', RESPONSE_STATUS_CODES.success, res)
   }
 
   async resetPassword(req: Request, res: Response) {

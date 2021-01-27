@@ -45,7 +45,6 @@ export class CommonService {
         }
         let path = file[`${keyName}`][0].path;
         path = path.replace('upload/', '');
-        console.log('this.environment', this.environment)
         if (this.environment === 'staging') {
             const imageFile = file[`${keyName}`][0]['path'];
             const imageData = await cloudinary.uploader.upload(imageFile, { tags: keyName });

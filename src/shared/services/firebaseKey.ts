@@ -1,15 +1,16 @@
 const firebase = {
   "type": "service_account",
-  "project_id": "reminder-app-1ebdd",
-  "private_key_id": "3e6b06fc551e221886e3bb53916da70e1986a374",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCQ08uVZuV1DzgQ\n9hSEwaWPguUsmBBfj7/h1fdXXG70Mzr7Wnt82SMDXLb+vWpjeFThI66rhLQitd/h\nMOkPleHfn+ksnn96Wm+U+RlBGGaMLPWvtcrNKCcrchPCi1nB3eWBtizbeyXP2ZjI\no+pFwoWidBI/az/XbJIhh+GuaFPWIWD1ZX9isAKhceOxH7OAxvEl2K80WWCtWCRD\nIl25tzs/d8+DwI2ul/vAgX/5/hqaHy5sl9MmS6/86Pd5+wvW3y49rR82to5UqA1a\nc22qFs1LmVAo++Gafzkh3luQojZivm0dWY5c7iVjUfnlIvfbXnADSqiNphli3wad\nZrz8JHFJAgMBAAECggEADr6lYDNO4qVXQ7DOA3sUoEEHFIxxxEzmD/fA/BGy0SVj\nGKKMZnhT3nyCu/osWe6vE5HWr2suDMegALUCUV4k1ifZbTvAxkPtTskyl0RE8noE\nVGyJdmwjWsK9PMYDsB9nhZZ2yCyoO5pPegPoLsyAXvr6vZ6tbAEHeqbzJNbFzEvH\n6FUmeFgJaGMChYkhzCMZlKHuVbOO3bdbjNT90iYOsuZ7B3JFDhyPXQYXzBynerR3\ndTHyvceNSnest6teBEd91LCyxuFs71E1vWOqHttWtVv1Rw9U7ZrP+EpOAyC7Ou5u\n93cX8uQ+8HSxasAeudpjdSKC7zSZdFkilxPfwKpq4QKBgQDLCtuv9RsUzfw+1lD5\nyD9cDVWckaR9c75Vm9j7R2fmXCNpjQ4yw4gzl8AwACg2eNrhUe+7tw82nFkuC0or\nRt7Avzgb3AprbtdTp+CLnhiT0j4JjxCtu8wJqoAfomAa36ZTns9B+eCFk1U/mMgI\n7HNw5SxkM201WckJ5MLHbnAPuQKBgQC2mepmO7GUhKVAne5WYEcincXTFW49fAa0\nRyKbo1bPQRzwtGUosIvV8wDgKgIbSgZvtKs4kOcByxxNU/H9a0r7WijzN6xTXb9r\nVkOsEnDABcbL5m3/x0RiwCan/xK8+h1UxFayaFwVXSWpWfb8ZsPjRXJMsGoSfcwp\nAkAm1eWWEQKBgCKYAQIjwq9ywQ17umQ0aAcpBnMcpWfydnVjjj6R1fP7stTjAY5I\nnkYcDtSe0jslsDU/npbfA6qMTO15YvOoqX8xlT+559SSGAHa0nk3QHy/D27Vf0P6\ngTMMZ7P8GF+7xzzsC+fzyPs5NQcW4s4Sa0DK6xtPX8X9PDGBVmZgPJuRAoGAJSg8\n4oDTKf20AuogTcNZtlmUn9eEj05lrtmq2TDrwVDmqrSKwTTrv6WrT/I8a4Esvh5t\nmR0jZOIH6FRkscTbhTpbiuKRVoWFJjpvmtxFxU1nnqZNS/com0+ujhEBpyLeRRmO\n6s8Brfc+aq+76rCeu+it0Z00eH7QxKeIll6AUYECgYAPto69cXM7ddMG4quJN2lA\nGwFjdQFs2KunGmoMAQC+dyUfz/Jg92rGolB+ezQolP08TUAOdU3OWAI0feq68cB8\ngr3QNaNfQURuVf4bdkVCAALSiL430lEkojpVGyYYOJcI6Ui0zUapeTtWpR9js5cx\nMvTohE3gpGGmszwQj+h1tQ==\n-----END PRIVATE KEY-----\n",
-  "client_email": "firebase-adminsdk-isw0m@reminder-app-1ebdd.iam.gserviceaccount.com",
-  "client_id": "107285890549340788110",
+  "project_id": "reminder-4ac50",
+  "private_key_id": "0740dc1b3476784c22dbe2e633fa0cbd343443b2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDJfJQfHlNQcG9l\n+yGTz17E54HlNIP9afbEPl94x1FXAxnJW9UCObp99bputRS5LNvZWMIBL726aPd7\n6Rv2fDjR4gDewahcR0wfr3IX6H4xTWVILznyNg90HtPjiyHQHe/VETxkoaPoO7qb\nvh7TSaKSWa14E6dyiUE1m7YCHvWFNhkdtXaFGYZTlY0ylLa5pqq9Ox6q5hvSm2r3\nWnKmtsbtD44PFv8l0YmvK3Th+dyAYZhVtlA45rjCn+HwRMT2eSrN2JqAnUc8UQgc\ntJ35NzOqa4bTevZxXyeQIlezlM8kVu647FwGX4adMLL1fqw0jg/G664ZkKIHt+0n\n3fs4N0Q7AgMBAAECggEAR33yuM/z0/jxLghbs6zC/a7/giqOIt70dlGDYsGmdO9e\nuPnirPV63LLSQfHytnnaUFaUEAO2mGwiVE80YtNU/fPpRyED8ipCMoP4Qc9251uE\n8oX/U5gnB5bgrD5z8vqMXNfOzA4msIJxBk4BdgsMqk0zpgWjRpq5DqJ/hGUjzO3x\n7fjkiK1ierMMc129sDAsvaYPfxwRFRXB1an/ZZkGhVGORKUMtM1BY4phVI/XDIZB\n49kbXwRieVHtZG/T+g3ZtpRW6v10BTS7q4orLRfP/Zcgw0BjjQQfTmpAGiEKh1qc\n7T5v4EwP84XwDH+YCr2g/TZxkiTKyp49Vu96ALLNQQKBgQDmzvGAw/siujlc5S9R\na9FFzKG/0VnKov8ghtrgaN8PSmazbZnl9HDoJhCBsxWcA1ldR9P2740ypS+b5WHi\ncVeoG3j1r1/lotk6GIG1e5UrHSjHYrspOnfMG0G0a87QZpKApxIZ/WxhbFeYkGFs\nuDLl3pMaoJ9ML7U5G5pQIkuiMQKBgQDfeln7ro8E2xw27NMCpLeM0NzdPZn3TAax\nOXpXZIXrkkcOTd91bT56u0lD//V+/iExt7IjeU6WMPEdCqFxkgkB422yV/ZMA84m\nCkyu20Nu8NWlaUtoOcqqJFdwkcMraS9HYtzdoEc6a6L3XCgvUjIgKqAlpD9guh8E\nwH4MiLvmKwKBgEEz4QGxW7bZyO63SADGZp5DSsZ3i9g058H2lsqilbEqIY06vyk5\nPtQ2PJ+HSemDALHbYsP1tHvEMojl6hsgTdUNvcQaQQsMUDWbSrlMKj29xRFekOT6\nwXEFmjAv7ILvFyAFEpYJA58aDjzpPLyL5MUPdZsmGRpat+VkKNnOdnNhAoGAYF5d\nkUe8CscFyrWjZL9tG38xzwHydA7H0ALOPANwMJ6an5N7KiMaz0gWFwm4brPd0pe5\nbMyx09h1ESX1aokj8zmEo2SFJFB7xDGq0bhhwuR97N+UEfTh7S7Qug1RUVYBelIq\nljO4o3upAewutAFI9lALUVAbuHVqTN1JPdR02pMCgYEAwAVM46WNcQGr86gAUuMi\n6M6Mp3g+ttignIpS7scjXhshQJjTHmncynqylO+yX9yFPxVhQQ65i20UcODiVGJI\n+exoZamSZ/PLsKx64jh9FpUFojzgCaIy8fLCZbXl3hIr7NmYR+3D4SEjNroG+/IQ\nOoM/X86dWgHUyEX17htfUsE=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-1fogk@reminder-4ac50.iam.gserviceaccount.com",
+  "client_id": "116587335769975919111",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
   "token_uri": "https://oauth2.googleapis.com/token",
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-isw0m%40reminder-app-1ebdd.iam.gserviceaccount.com"
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-1fogk%40reminder-4ac50.iam.gserviceaccount.com"
 }
+
 module.exports = {
   firebase: firebase
 }

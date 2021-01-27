@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, Req, Res, UploadedFiles, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req, Res, UploadedFiles, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { Response, Request } from 'express';
 
 import { AuthGuard } from '@nestjs/passport';
@@ -17,6 +17,14 @@ export class UserController {
         private readonly userService: UserService,
     ) { }
 
+    @Get('/')
+    @HttpCode(200)
+    @UseGuards(AuthGuard("jwt-device"), RolesGuard)
+    @Roles(UserTypes.user)
+    async getLogedInUserInfo(@Req() req: Request, @Res() res: Response) {
+        return await this.userService.getLogedInUserInfo(req, res);
+    }
+
     @Post('/update-profile')
     @HttpCode(200)
     @UseGuards(AuthGuard("jwt-device"), RolesGuard)
@@ -29,8 +37,8 @@ export class UserController {
             }
         ], multerUpload({ destination: 'profilePicture' })),
     )
-    async updateUserProfile(@UploadedFiles() files: { [key: string]: any }, @Body(new ValidationPipe()) data: ChangeSubscriptionStatus, @Req() req: Request, @Res() res: Response) {
-        return await this.userService.updateUserProfile(req, res);
+    async updateUserProfile(@UploadedFiles() files: { [key: string]: any }, @Req() req: Request, @Res() res: Response) {
+        return await this.userService.updateUserProfile(files, req, res);
     }
 
     @Post('/change-subscription-status')
