@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { ListOfGenderSelectionOptions, ListOfRelationOptions } from '../api/user/userReminder/userReminder.validation';
+import { ListOfGenderSelectionOptions, ListOfRelationOptions } from '@api/user/userReminder/userReminder.validation';
 
 export const UsersRemindersSchema = new mongoose.Schema({
     userId: {

@@ -32,7 +32,7 @@ export class OccasionService {
     }
 
     async updateOccasionInfo(file: any, req: Request, res: Response) {
-        let { occasionName, description, countryId } = req.body
+        const updatedInformation = req.body
         const { id } = req.params
         let occasionInfoInDb = await this.occasionModel.findById(id);
         if (!occasionInfoInDb) {
@@ -40,17 +40,10 @@ export class OccasionService {
         }
         if (file && file.occasionImage && file.occasionImage.length) {
             const uploadImage = await this.commonService.manageUploadImage(file, 'occasionImage', res)
-            occasionInfoInDb.occasionImage = uploadImage;
+            updatedInformation.occasionImage = uploadImage;
         }
-        if (countryId) {
-            const countryExistWithSameName = await this.countryModel.findById(countryId).lean().exec();
-            if (!countryExistWithSameName) countryId = null
-        }
-        occasionInfoInDb.occasionName = occasionName
-        occasionInfoInDb.description = description
-        occasionInfoInDb.countryId = countryId
-        occasionInfoInDb.save()
-        return response('features.occasion.updated', RESPONSE_STATUS_CODES.success, res, occasionInfoInDb)
+        const updatedInformationForOccasion = await this.occasionModel.findByIdAndUpdate(id, updatedInformation, { new: true })
+        return response('features.occasion.updated', RESPONSE_STATUS_CODES.success, res, updatedInformationForOccasion)
     }
 
     async deleteOccasionRecord(req: Request, res: Response) {

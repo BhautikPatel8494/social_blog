@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Response } from 'express';
 
-import { ConfigService } from '../../config/services/config.service';
+import { ConfigService } from '@config/services/config.service';
 import { User } from '../interface/model.interface';
 cloudinary.config({
     cloud_name: 'dhav5h5ih',

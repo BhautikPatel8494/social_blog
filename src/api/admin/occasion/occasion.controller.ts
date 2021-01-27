@@ -1,13 +1,15 @@
 import { Body, Controller, Delete, Get, HttpCode, Post, Put, Req, Res, UploadedFiles, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { Response, Request } from 'express';
-import { Roles } from '../../../middleware/role.decorator';
-import { RolesGuard } from '../../../middleware/roles.gaurd';
-import { UserTypes } from '../../../models/user.model';
+
+import { multerUpload } from '@root/shared/services/fileUpload.service';
+import { Roles } from '@middleware/role.decorator';
+import { RolesGuard } from '@middleware/roles.gaurd';
+import { UserTypes } from '@models/user.model';
+
 import { OccasionService } from './occasion.service';
 import { UpsertOccasion } from './occasion.validation';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { multerUpload } from '@root/shared/services/fileUpload.service';
 
 @Controller('api/v1/occasion')
 export class OccasionController {

@@ -3,9 +3,9 @@ import { Response, Request } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Country, Occasion } from '../../../shared/interface/model.interface';
-import { response } from '../../../shared/services/sendResponse.service';
-import { RESPONSE_STATUS_CODES } from '../../../shared/constants';
+import { Country, Occasion } from '@shared/interface/model.interface';
+import { response } from '@shared/services/sendResponse.service';
+import { RESPONSE_STATUS_CODES } from '@shared/constants';
 
 @Injectable()
 export class CountryService {

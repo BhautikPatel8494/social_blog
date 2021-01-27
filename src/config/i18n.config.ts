@@ -1,7 +1,8 @@
 // Package import
-import { languageCodes } from '../shared/constants';
 import * as i18n from 'i18n';
 import path from 'path';
+
+import { languageCodes } from '@shared/constants';
 
 i18n.configure({
   locales: Object.values(languageCodes),

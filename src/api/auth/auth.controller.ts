@@ -2,11 +2,12 @@ import { Controller, Post, Body, Res, Req, HttpCode, ValidationPipe, Put, UseGua
 import { Response, Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 
+import { RolesGuard } from '@middleware/roles.gaurd';
+import { Roles } from '@middleware/role.decorator';
+import { UserTypes } from '@models/user.model';
+
 import { AuthService } from './auth.service';
 import { SignUpForUser, SignInForUser, ChangePassword, ForgotPassword, ResetPassword, DeviceTokenFields } from './auth.validation';
-import { RolesGuard } from '../../middleware/roles.gaurd';
-import { Roles } from '../../middleware/role.decorator';
-import { UserTypes } from '../../models/user.model';
 
 @Controller('/api/v1')
 export class AuthDeviceController {

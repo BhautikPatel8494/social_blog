@@ -7,11 +7,12 @@ import moment, { Moment } from 'moment'
 import * as _ from 'lodash'
 import { scheduleJob } from 'node-schedule'
 
-import { User, UserReminder } from '@shared/interface/model.interface';
+import { Occasion, User, UserReminder } from '@shared/interface/model.interface';
 import { response } from '@root/shared/services/sendResponse.service';
 import { RESPONSE_STATUS_CODES } from '@root/shared/constants';
 import { ListOfReminderOptions } from './userReminder.validation';
 import { NotificationService } from '@shared/services/notification.service';
+import { add } from 'lodash';
 
 const userSetCronJobList = {}
 
@@ -20,6 +21,7 @@ export class UserReminderService implements OnModuleInit {
 
     constructor(
         @InjectModel('Reminders') private readonly reminderModel: Model<UserReminder>,
+        @InjectModel('Occasion') private readonly occasionModel: Model<Occasion>,
         @InjectModel('User') private readonly userModel: Model<User>,
         private readonly notificationService: NotificationService,
     ) { }
@@ -87,7 +89,34 @@ export class UserReminderService implements OnModuleInit {
     async getListOfReminders(req: any, res: Response) {
         const userId = req.user._id
         const listOfReminderForLoginUser = await this.reminderModel.find({ userId }).lean().exec()
-        return response('features.reminder.listGet', RESPONSE_STATUS_CODES.success, res, listOfReminderForLoginUser)
+        const reminderForToday = []
+        const reminderForTomorrow = []
+        const reminderForUpcommingDays = []
+        for (let i = 0; i < listOfReminderForLoginUser.length; i++) {
+            let reminderInfo = listOfReminderForLoginUser[i];
+            if (!reminderInfo.isNeedToRepeatEveryYear && moment().diff(moment(reminderInfo.occasionDate, 'DD/MM/YYYY'), 'day') > 0) {
+                this.deleteOldCronJobForRemidner(reminderInfo._id)
+                await this.reminderModel.findByIdAndDelete(reminderInfo._id)
+            } else {
+                let occasionDateInMoment = moment(reminderInfo.occasionDate, 'DD/MM/YYYY').set({ year: new Date().getFullYear() })
+                if (moment().diff(occasionDateInMoment, 'days') > 0) {
+                    occasionDateInMoment = occasionDateInMoment.add({ year: 1 })
+                }
+                reminderInfo.occasionDate = occasionDateInMoment.format('DD/MM/YYYY')
+                const getOcaasionInfo = await this.occasionModel.findOne({ occasionName: reminderInfo.occasionName }).select('occasionImage').lean().exec();
+                reminderInfo.occasionImage = getOcaasionInfo.occasionImage ? getOcaasionInfo.occasionImage : null;
+                const isTodayReminder = moment().diff(occasionDateInMoment) > 0
+                const isTomorrowReminder = moment().add(1, 'day').diff(occasionDateInMoment) > 0
+                if (isTodayReminder) {
+                    reminderForToday.push(reminderInfo)
+                } else if (isTomorrowReminder) {
+                    reminderForTomorrow.push(reminderInfo)
+                } else {
+                    reminderForUpcommingDays.push(reminderInfo)
+                }
+            }
+        }
+        return response('features.reminder.listGet', RESPONSE_STATUS_CODES.success, res, { reminderForToday, reminderForTomorrow, reminderForUpcommingDays })
     }
 
     async setReminderCronJob(userId: string, reminderId: string, setReminderParamters) {

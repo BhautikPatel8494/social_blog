@@ -25,6 +25,15 @@ export const UsersSchema = new mongoose.Schema({
         type: String,
         default: null,
     },
+    profilePicture: {
+        type: String,
+        default: null,
+    },
+    countryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Country',
+        default: null
+    },
     userType: {
         type: String,
         required: true,

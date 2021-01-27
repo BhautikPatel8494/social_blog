@@ -1,11 +1,13 @@
 import { Controller, Req, Res, Post, Get, Delete, Put, HttpCode, UseGuards, ValidationPipe, Body } from '@nestjs/common';
 import { AuthGuard } from "@nestjs/passport";
-import { UserReminderService } from './userReminder.service'
 import { Response, Request } from 'express';
-import { RolesGuard } from "../../../middleware/roles.gaurd";
-import { Roles } from '../../../middleware/role.decorator'
-import { UserTypes } from '../../../models/user.model';
+
+import { RolesGuard } from "@middleware/roles.gaurd";
+import { Roles } from '@middleware/role.decorator'
+import { UserTypes } from '@models/user.model';
+
 import { InsertReminder, UpdateReminder } from './userReminder.validation';
+import { UserReminderService } from './userReminder.service'
 
 @Controller('api/v1/reminder')
 export class UserRemindersController {

@@ -5,14 +5,15 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { v4 } from 'uuid';
 
+import { ConfigService } from '@config/services/config.service';
+import { User } from '@shared/interface/model.interface';
+import { CommonService } from '@shared/services/common.service'
+import { sendMail } from '@shared/services/nodeMailer.service';
+import { UserTypes } from '@models/user.model';
+import { response } from '@shared/services/sendResponse.service';
+import { RESPONSE_STATUS_CODES } from '@shared/constants';
+
 import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { ConfigService } from '../../config/services/config.service';
-import { User } from '../../shared/interface/model.interface';
-import { CommonService } from '../../shared/services/common.service'
-import { sendMail } from '../../shared/services/nodeMailer.service';
-import { UserTypes } from '../../models/user.model';
-import { response } from '../../shared/services/sendResponse.service';
-import { RESPONSE_STATUS_CODES } from '../../shared/constants';
 const saltRounds = 10;
 
 @Injectable()
