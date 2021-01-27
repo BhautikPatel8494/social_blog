@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import * as admin from "firebase-admin";
+import { InjectModel } from '@nestjs/mongoose';
 const firebase = require('./firebaseKey');
+
+import * as admin from "firebase-admin";
+import moment from 'moment'
+import { Model } from 'mongoose';
+import { ObjectLiteral } from '../interface/common.interface';
+import { Occasion } from '../interface/model.interface';
 
 // Initialize Firebase
 admin.initializeApp({
@@ -10,14 +16,30 @@ admin.initializeApp({
 @Injectable()
 export class NotificationService {
     constructor(
+        @InjectModel('Occasion') private readonly occasionModel: Model<Occasion>,
     ) { }
 
-    async sendPushNotification(tokens: any, title: string, message: string) {
+    async sendPushNotification(tokens: any, title: string, message: string, extraInfo: ObjectLiteral) {
+        if (extraInfo) {
+            let occasionDateInMoment = moment(extraInfo.occasionDate, 'DD/MM/YYYY').set({ year: new Date().getFullYear() })
+            if (moment().diff(occasionDateInMoment, 'days') > 0) {
+                occasionDateInMoment = occasionDateInMoment.add({ year: 1 })
+            }
+            extraInfo.titleOfReminder = message
+            extraInfo.occasionDate = occasionDateInMoment.format('DD/MM/YYYY')
+            const getOcaasionInfo = await this.occasionModel.findOne({ occasionName: extraInfo.occasionName }).select('occasionImage').lean().exec();
+            if (getOcaasionInfo) {
+                extraInfo.occasionImage = getOcaasionInfo.occasionImage ? getOcaasionInfo.occasionImage : null;
+            }
+        }
         const messageObj = {
-            tokens: [tokens],
+            tokens: tokens,
             notification: {
                 title: title,
                 body: message,
+            },
+            data: {
+                reminderInfo: JSON.stringify(extraInfo)
             }
         }
         if (tokens && tokens.length) {

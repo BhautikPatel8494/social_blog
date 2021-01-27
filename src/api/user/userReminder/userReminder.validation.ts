@@ -29,6 +29,10 @@ export class InsertReminder {
 
   @IsString()
   @IsNotEmpty()
+  personName: string;
+
+  @IsString()
+  @IsNotEmpty()
   occasionDate: string;
 
   @IsString()
@@ -69,6 +73,10 @@ export class UpdateReminder {
   @IsString()
   @IsOptional()
   occasionDate: string;
+
+  @IsString()
+  @IsOptional()
+  personName: string;
 
   @IsString()
   @IsOptional()

@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CronJob } from 'cron';
 import moment, { Moment } from 'moment'
+import { compareTwoStrings } from 'string-similarity'
 import * as _ from 'lodash'
 import { scheduleJob } from 'node-schedule'
 
@@ -41,8 +42,7 @@ export class UserReminderService implements OnModuleInit {
         }
         req.body.userId = id
         const createUserReminderInTable = await this.reminderModel.create(req.body);
-        const setReminderParamters = { id, remindMeOn, occasionDate, customDate, isNeedToRepeatEveryYear }
-        await this.setReminderCronJob(id, createUserReminderInTable._id, setReminderParamters)
+        await this.setReminderCronJob(id, createUserReminderInTable._id, req.body)
         return response('features.reminder.create', RESPONSE_STATUS_CODES.success, res, createUserReminderInTable)
     }
 
@@ -102,9 +102,12 @@ export class UserReminderService implements OnModuleInit {
                 if (moment().diff(occasionDateInMoment, 'days') > 0) {
                     occasionDateInMoment = occasionDateInMoment.add({ year: 1 })
                 }
+                reminderInfo.titleOfReminder = this.getFormattedText(reminderInfo)
                 reminderInfo.occasionDate = occasionDateInMoment.format('DD/MM/YYYY')
                 const getOcaasionInfo = await this.occasionModel.findOne({ occasionName: reminderInfo.occasionName }).select('occasionImage').lean().exec();
-                reminderInfo.occasionImage = getOcaasionInfo.occasionImage ? getOcaasionInfo.occasionImage : null;
+                if (getOcaasionInfo) {
+                    reminderInfo.occasionImage = getOcaasionInfo.occasionImage ? getOcaasionInfo.occasionImage : null;
+                }
                 const isTodayReminder = moment().diff(occasionDateInMoment) > 0
                 const isTomorrowReminder = moment().add(1, 'day').diff(occasionDateInMoment) > 0
                 if (isTodayReminder) {
@@ -120,7 +123,7 @@ export class UserReminderService implements OnModuleInit {
     }
 
     async setReminderCronJob(userId: string, reminderId: string, setReminderParamters) {
-        const { id, remindMeOn, occasionDate, customDate, isNeedToRepeatEveryYear } = setReminderParamters
+        const { remindMeOn, occasionDate, customDate, isNeedToRepeatEveryYear } = setReminderParamters
         if (remindMeOn.includes(ListOfReminderOptions.onTheDay)) {
             let timeRule: string | Date = ''
             if (isNeedToRepeatEveryYear) {
@@ -130,7 +133,7 @@ export class UserReminderService implements OnModuleInit {
                 timeRule = moment(occasionDate, 'DD/MM/YYYY').toDate()
             }
             userSetCronJobList[`${reminderId}-1`] = scheduleJob(timeRule, async () => {
-                await this.sendNotificationToDevice(userId)
+                await this.sendNotificationToDevice(userId, setReminderParamters)
             })
         }
         if (remindMeOn.includes(ListOfReminderOptions.oneDayBefore)) {
@@ -143,7 +146,7 @@ export class UserReminderService implements OnModuleInit {
                 timeRule = moment(occasionDate, 'DD/MM/YYYY').subtract(1, 'day').toDate();
             }
             userSetCronJobList[`${reminderId}-2`] = scheduleJob(timeRule, async () => {
-                await this.sendNotificationToDevice(userId)
+                await this.sendNotificationToDevice(userId, setReminderParamters)
             })
         }
         if (remindMeOn.includes(ListOfReminderOptions.oneMonthBefore)) {
@@ -156,7 +159,7 @@ export class UserReminderService implements OnModuleInit {
                 timeRule = moment(occasionDate, 'DD/MM/YYYY').subtract(1, 'month').toDate();
             }
             userSetCronJobList[`${reminderId}-3`] = scheduleJob(timeRule, async () => {
-                await this.sendNotificationToDevice(userId)
+                await this.sendNotificationToDevice(userId, setReminderParamters)
             })
         }
         if (remindMeOn.includes(ListOfReminderOptions.oneWeekBefore)) {
@@ -169,7 +172,7 @@ export class UserReminderService implements OnModuleInit {
                 timeRule = moment(occasionDate, 'DD/MM/YYYY').subtract(1, 'week').toDate();
             }
             userSetCronJobList[`${reminderId}-4`] = scheduleJob(timeRule, async () => {
-                await this.sendNotificationToDevice(userId)
+                await this.sendNotificationToDevice(userId, setReminderParamters)
             })
         }
         if (remindMeOn.includes(ListOfReminderOptions.custom)) {
@@ -181,20 +184,19 @@ export class UserReminderService implements OnModuleInit {
                 timeRule = moment(customDate, 'DD/MM/YYYY').toDate();
             }
             userSetCronJobList[`${reminderId}-5`] = scheduleJob(timeRule, async () => {
-                await this.sendNotificationToDevice(userId)
+                await this.sendNotificationToDevice(userId, setReminderParamters)
             })
         }
         return true;
     }
 
-    async sendNotificationToDevice(id: string) {
+    async sendNotificationToDevice(id: string, reminderDetails: any) {
+        const message = this.getFormattedText(reminderDetails, true)
         console.log(`CronJob Started for user ${id}`)
-        const { deviceTokenList } = await this.userModel.findById(id)
+        let { deviceTokenList } = await this.userModel.findById(id)
         if (deviceTokenList?.length) {
-            for (let i = 0; i < deviceTokenList.length; i++) {
-                const { deviceToken } = deviceTokenList[i];
-                await this.notificationService.sendPushNotification(deviceToken, 'Reminder App notification', 'New notification from reminder app')
-            }
+            const updatedDeviceTokenList = deviceTokenList.map(dData => dData.deviceToken)
+            await this.notificationService.sendPushNotification(updatedDeviceTokenList, 'New Reminder', message, reminderDetails)
         }
         return true;
     }
@@ -207,6 +209,34 @@ export class UserReminderService implements OnModuleInit {
             }
         }
         return true;
+    }
+
+    getFormattedText(reminderInfo: any, isForNotification = false) {
+        const { occasionName, personName, occasionDate } = reminderInfo
+        let formatedString: string
+        if (compareTwoStrings(occasionName, 'Birthday') > 0.5) {
+            const totalYears = moment().diff(moment(occasionDate, 'DD/MM/YYYY'), 'year')
+            formatedString = `${personName} is turning ${totalYears}`
+        } else {
+            formatedString = `${personName}'s ${occasionName}`
+        }
+        if (isForNotification) {
+            let occasionDateInMoment = moment(occasionDate, 'DD/MM/YYYY').set({ year: new Date().getFullYear() })
+            if (moment().diff(occasionDateInMoment, 'days') > 0) {
+                occasionDateInMoment = occasionDateInMoment.add({ year: 1 })
+            }
+            const diffInDays = moment().diff(occasionDateInMoment, 'days')
+            if (diffInDays === 0) {
+                if (occasionDateInMoment.isAfter()) {
+                    formatedString = formatedString + ` in tomorrow`
+                } else {
+                    formatedString = formatedString + ` on today`
+                }
+            } else {
+                formatedString = formatedString + ` in next ${occasionDateInMoment.diff(moment(), 'days') + 1} day`
+            }
+        }
+        return formatedString
     }
 
     async onModuleInit() {
