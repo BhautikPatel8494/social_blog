@@ -1,96 +1,29 @@
 import { IsString, IsEmail, MinLength, IsOptional, IsNumber, IsEnum, IsNotEmpty } from 'class-validator';
-import { SocialMediaTypes } from '@models/user.model';
 
 export class SignInForUser {
 
   @IsEmail()
-  @IsOptional()
+  @IsNotEmpty()
   email: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @MinLength(6)
   password: string;
-
-  @IsNumber()
-  @IsOptional()
-  @IsEnum(Object.values(SocialMediaTypes))
-  socialMediaType: number;
-
-  @IsString()
-  @IsOptional()
-  socialMediaId: string;
-}
-
-export class ForgotPassword {
-
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-}
-
-export class ResetPassword {
-
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @IsString()
-  @IsNotEmpty()
-  newPassword: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  code: number;
 }
 
 export class SignUpForUser {
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   name: string;
 
   @IsEmail()
-  @IsOptional()
+  @IsNotEmpty()
   email: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @MinLength(6)
   password: string;
-
-  @IsString()
-  @IsOptional()
-  birthDate: string;
-
-  @IsNumber()
-  @IsOptional()
-  @IsEnum(Object.values(SocialMediaTypes))
-  socialMediaType: number;
-
-  @IsString()
-  @IsOptional()
-  socialMediaId: string;
 }
-export class ChangePassword {
-
-  @IsString()
-  @IsNotEmpty()
-  oldPassword: string;
-
-  @IsString()
-  @IsNotEmpty()
-  newPassword: string;
-}
-
-export class DeviceTokenFields {
-
-  @IsString()
-  @IsNotEmpty()
-  deviceToken: string;
-
-  @IsString()
-  @IsNotEmpty()
-  deviceType: string;
-}
-

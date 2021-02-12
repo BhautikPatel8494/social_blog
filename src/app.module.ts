@@ -9,20 +9,14 @@ import { AuthModule } from 'api/auth/auth.module';
 import { ConfigService } from '@config/services/config.service';
 import { ConfigModule } from '@config/config.module'
 import { SharedModule } from '@shared/shared.module';
-import { GiftRecommendationModule } from '@root/api/admin/giftRecommendation/giftRecommendation.module';
-import { OccasionModule } from '@api/admin/occasion/occasion.module';
-import { CountryModule } from '@api/admin/country/country.module';
-import { UserReminderModule } from '@api/user/userReminder/userReminder.module';
+import { UserPostModule } from '@root/api/user/post/post.module';
 
 @Module({
   imports: [
     UserModule,
     AuthModule,
     SharedModule,
-    GiftRecommendationModule,
-    UserReminderModule,
-    OccasionModule,
-    CountryModule,
+    UserPostModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

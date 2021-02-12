@@ -8,9 +8,9 @@ import { Response } from 'express';
 import { ConfigService } from '@config/services/config.service';
 import { User } from '../interface/model.interface';
 cloudinary.config({
-    cloud_name: 'dhav5h5ih',
-    api_key: '694999781424567',
-    api_secret: 'yMgxokQdTSWLxlQUFVkr_byU4MU'
+    cloud_name: 'dcax1z817',
+    api_key: '276495167163333',
+    api_secret: 'wvEYrVV1NkcqlY3ECh6gvv-gS1Y'
 });
 
 @Injectable()

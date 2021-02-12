@@ -6,7 +6,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthService } from './auth.service';
 import { JwtDeviceStrategy } from './jwt-device.strategy';
 import { AuthDeviceController } from './auth.controller';
-import { JWTOptionalGuard } from './jwt-authGuard';
 
 import { ConfigService } from '@config/services/config.service';
 import { ConfigModule } from '@config/config.module';
@@ -32,7 +31,7 @@ import { UsersSchema } from '@models/user.model';
     HttpModule,
   ],
   controllers: [AuthDeviceController],
-  providers: [AuthService, JwtDeviceStrategy, JWTOptionalGuard],
+  providers: [AuthService, JwtDeviceStrategy],
   exports: [PassportModule, AuthService, JwtModule],
 })
 export class AuthModule { }

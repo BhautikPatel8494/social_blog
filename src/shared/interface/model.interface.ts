@@ -6,54 +6,26 @@ export interface User extends Document {
   readonly name: string;
   readonly email: string;
   readonly password: string;
-  readonly userType: string;
-  readonly contactNumber: string;
-  readonly deviceTokens: Array<string>;
-  readonly deviceTokenList: Array<DeviceTone>;
-  readonly isUserSubscriptionEnable: boolean;
-  readonly freeRemindersAvailable: number;
   apiToken: string;
-  readonly birthDate: Date;
 }
-
-interface DeviceTone {
-  deviceToken: string,
-  deviceType: string
-}
-
-export interface GiftRecommendation extends Document {
-  readonly _id: string;
-  readonly category: string;
-  readonly description: string;
-}
-
-export interface GiftRecommendationCategory extends Document {
-  readonly _id: string;
-  readonly categoryName: string;
-}
-
-export interface Occasion extends Document {
+export interface UserPost extends Document {
   readonly _id: string;
   readonly occationName: string;
   readonly description: string;
 }
 
-export interface UserReminder extends Document {
+export interface LikeDislikeModel extends Document {
   readonly _id: string;
-  readonly occasionDate: string;
-  readonly genderOfPerson: number;
-  readonly relationsWithPerson: number;
-  readonly isNeedToShowGiftRecommendations: boolean;
-  readonly remindMeOn: string[];
-  readonly isNeedToRepeatEveryYear: boolean;
+  readonly userId: string;
+  readonly postId: string;
 }
 
-export interface Country extends Document {
+export interface CommentModel extends Document {
   readonly _id: string;
-  readonly name: string;
-  readonly alias: string;
+  readonly userId: string;
+  readonly postId: string;
+  readonly comment: string;
 }
-
 
 
 

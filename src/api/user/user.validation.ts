@@ -1,8 +1,8 @@
-import { IsNotEmpty, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsBoolean, IsString } from 'class-validator';
 
-export class ChangeSubscriptionStatus {
+export class GetSingleUser {
 
-  @IsBoolean()
+  @IsString()
   @IsNotEmpty()
-  isUserSubscriptionEnable: boolean
+  userId: string
 }
