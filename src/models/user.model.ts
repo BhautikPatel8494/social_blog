@@ -15,6 +15,6 @@ export const UsersSchema = new mongoose.Schema({
     },
     apiToken: {
         type: String,
-        required: true,
+        default: null,
     },
 }, { timestamps: true });

@@ -1,1 +1,1 @@
-# reminder-app-backend
+# social-blog-backend

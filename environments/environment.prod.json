@@ -4,6 +4,6 @@
     "JWT_SECRET": "bA2xcjpf8y5aSUFsNB2qN5yymUBSs6es3qHoFpGkec75RCeBb8cpKauGefw5qy4",
     "JWT_EXPIRATION_DAYS": "30d",
     "SENTRY_KEY":"https://35310b7951444c558a694df59e5ee6db@o508551.ingest.sentry.io/5609233",
-    "MONGO_URI": "mongodb+srv://dbUser:dbUser@cluster0.9sati.mongodb.net/reminderApp?retryWrites=true&w=majority",
+    "MONGO_URI": "mongodb+srv://dbUser1:GM9KZch6s0hXmtqs@cluster0.ievwx.mongodb.net/Cluster0?retryWrites=true&w=majority",
     "SERVER_URL": "http://localhost:4000"
 }
