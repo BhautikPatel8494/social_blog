@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpCode, Post, Req, Res, UploadedFiles, UseGuar
 import { Response, Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
-import { GetSingleUser } from './user.validation';
+import { FollowUser, GetSingleUser } from './user.validation';
 
 @Controller('api/v1/user')
 export class UserController {
@@ -21,5 +21,12 @@ export class UserController {
     @UseGuards(AuthGuard("jwt-device"))
     async getUserInfo(@Body(new ValidationPipe()) data: GetSingleUser, @Req() req: Request, @Res() res: Response) {
         return await this.userService.getUserInfo(req, res);
+    }
+
+    @Post('/follow-unfollow')
+    @HttpCode(200)
+    @UseGuards(AuthGuard("jwt-device"))
+    async followUnfollowUser(@Body(new ValidationPipe()) data: FollowUser, @Req() req: Request, @Res() res: Response) {
+        return await this.userService.followUnfollowUser(req, res);
     }
 }

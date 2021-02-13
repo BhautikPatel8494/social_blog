@@ -4,6 +4,6 @@
     "JWT_SECRET": "bA2xcjpf8y5aSUFsNB2qN5yymUBSs6es3qHoFpGkec75RCeBb8cpKauGefw5qy4",
     "JWT_EXPIRATION_DAYS": "30d",
     "SENTRY_KEY":"https://afe93b63b5664d8c86ea994dfb0b0de4@o508551.ingest.sentry.io/5609232",
-    "MONGO_URI": "mongodb://localhost:27017/reminderApp",
+    "MONGO_URI": "mongodb://localhost:27017/socialBlog",
     "SERVER_URL": "http://localhost:4000"
 }

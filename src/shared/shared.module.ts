@@ -10,6 +10,7 @@ import { AuthService } from '@api/auth/auth.service'
 import { CommonService } from './services/common.service';
 import { UserPostService } from '@root/api/user/post/post.service';
 import { CommentSchema } from '@root/models/comment.model';
+import { FollowersModel } from '@root/models/followers.model';
 
 @Global()
 @Module({
@@ -18,7 +19,8 @@ import { CommentSchema } from '@root/models/comment.model';
       { name: 'User', schema: UsersSchema },
       { name: 'UserPost', schema: UserPostSchema },
       { name: 'LikeDislike', schema: UserPostSchema },
-      { name: 'Comment', schema: CommentSchema }
+      { name: 'Comment', schema: CommentSchema },
+      { name: 'Followers', schema: FollowersModel }
     ]),
     AuthModule,
   ],

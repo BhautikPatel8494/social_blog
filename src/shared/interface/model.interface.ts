@@ -20,6 +20,12 @@ export interface LikeDislikeModel extends Document {
   readonly postId: string;
 }
 
+export interface FollowerModel extends Document {
+  readonly _id: string;
+  readonly userId: string;
+  readonly targetUserId: string;
+}
+
 export interface CommentModel extends Document {
   readonly _id: string;
   readonly userId: string;

@@ -1,6 +1,7 @@
 {
 	"common.emailNotExist": "Email does not exist.",
 	"common.userNotFound": "User not found.",
+	"common.success": "OK",
 	"common.invalidData": "Data not sufficient. Please pass valid info.",
 	"user.auth.logIn.failedToLogin": "Failed to login for user.",
 	"user.auth.logIn.success": "Login Successfully.",
